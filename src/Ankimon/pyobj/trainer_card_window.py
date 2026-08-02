@@ -1,7 +1,8 @@
-from PyQt6.QtWidgets import (QDialog, QVBoxLayout, QLabel, 
+from PyQt6.QtWidgets import (QDialog, QVBoxLayout, QLabel,
                            QHBoxLayout, QWidget, QGridLayout)
 from PyQt6.QtGui import QPixmap, QFont
 from PyQt6.QtCore import Qt
+from aqt import mw
 from ..resources import trainer_sprites_path
 import os
 
@@ -15,7 +16,7 @@ class TrainerCardGUI(QDialog):
         self.show()
 
     def init_ui(self):
-        self.setWindowTitle('Trainer Card')
+        self.setWindowTitle(mw.translator.translate("trainer_card_button"))
         self.setFixedSize(500, 350)
         
         # Main layout
@@ -45,7 +46,7 @@ class TrainerCardGUI(QDialog):
                 pixmap.scaled(190, 190, Qt.AspectRatioMode.KeepAspectRatio)
             )
         else:
-            self.trainer_image.setText("No Image Available")
+            self.trainer_image.setText(mw.translator.translate("tcard.no_image"))
 
         self.trainer_image.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
@@ -60,12 +61,12 @@ class TrainerCardGUI(QDialog):
         username_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         
         # Badge count
-        badge_label = QLabel(f"Badges: {self.trainer_card.badge_count}")
+        badge_label = QLabel(mw.translator.translate("tcard.badges", count=self.trainer_card.badge_count))
         badge_label.setFont(QFont("Arial", 12, QFont.Weight.Bold))
         badge_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         #level label
-        self.level_label = QLabel(f"Level: {self.trainer_card.level}   " + f"XP: {self.trainer_card.xp}")
+        self.level_label = QLabel(mw.translator.translate("tcard.level_xp", level=self.trainer_card.level, xp=self.trainer_card.xp))
         self.level_label.setFont(QFont("Arial", 11, QFont.Weight.Bold))
         self.level_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         
@@ -91,12 +92,12 @@ class TrainerCardGUI(QDialog):
             return title_label
         
         # Add trainer information (excluding name and id since they're now on the left)
-        self.cash = create_info_label("Cash:", f"{self.trainer_card.cash}$")
-        self.fav_pokemon_label = create_info_label("Favorite Pokémon:", self.trainer_card.favorite_pokemon)
-        self.team_pokemon_label = create_info_label("Team:", self.trainer_card.team)
-        self.highest_level_label = create_info_label("Highest Level:", self.trainer_card.highest_level)
-        self.league_label = create_info_label("League:", self.trainer_card.league)
-        self.next_lvl_label = create_info_label(f"XP Needed for Level Up:", f"{self.trainer_card.xp_for_next_level()} XP")
+        self.cash = create_info_label(mw.translator.translate("tcard.cash"), f"{self.trainer_card.cash}$")
+        self.fav_pokemon_label = create_info_label(mw.translator.translate("tcard.favorite_pokemon"), self.trainer_card.favorite_pokemon)
+        self.team_pokemon_label = create_info_label(mw.translator.translate("tcard.team"), self.trainer_card.team)
+        self.highest_level_label = create_info_label(mw.translator.translate("tcard.highest_level"), self.trainer_card.highest_level)
+        self.league_label = create_info_label(mw.translator.translate("tcard.league"), self.trainer_card.league)
+        self.next_lvl_label = create_info_label(mw.translator.translate("tcard.xp_needed"), f"{self.trainer_card.xp_for_next_level()} XP")
         # Add widgets to main layout
         main_layout.addWidget(left_widget)
         main_layout.addWidget(right_widget)
@@ -113,11 +114,11 @@ class TrainerCardGUI(QDialog):
             username_label.setText(f"@{self.trainer_card.trainer_id}")
         
         # Update right side
-        self.level_label.setText(f"Level: {self.trainer_card.level} XP: {self.trainer_card.xp}")
-        self.fav_pokemon_label.setText(f"Favorite Pokémon: {self.trainer_card.favorite_pokemon}")
-        self.team_pokemon_label.setText(f"Team: {self.trainer_card.team}")
-        self.highest_level_label.setText(f"Highest Level: {self.trainer_card.highest_level}")
-        self.league_label.setText(f"League: {self.trainer_card.league}")
+        self.level_label.setText(mw.translator.translate("tcard.level_xp", level=self.trainer_card.level, xp=self.trainer_card.xp))
+        self.fav_pokemon_label.setText(f"{mw.translator.translate('tcard.favorite_pokemon')} {self.trainer_card.favorite_pokemon}")
+        self.team_pokemon_label.setText(f"{mw.translator.translate('tcard.team')} {self.trainer_card.team}")
+        self.highest_level_label.setText(f"{mw.translator.translate('tcard.highest_level')} {self.trainer_card.highest_level}")
+        self.league_label.setText(f"{mw.translator.translate('tcard.league')} {self.trainer_card.league}")
         
         # Update image if changed
         if os.path.exists(self.trainer_card.image_path):

@@ -303,6 +303,11 @@ class Pokedex_Widget(QWidget):
 
         # Combine the HTML template with the generated rows
         html_content = pokedex_html_template.replace('<!-- Table Rows Will Go Here -->', ''.join(table_rows))
+        # Translate the table headers
+        html_content = (html_content
+            .replace('<th>No.</th>', f'<th>{mw.translator.translate("pokedex.col_no")}</th>')
+            .replace('<th>Name</th>', f'<th>{mw.translator.translate("pokedex.col_name")}</th>')
+            .replace('<th>Image</th>', f'<th>{mw.translator.translate("pokedex.col_image")}</th>'))
 
         #html_content = self.read_html_file(f"{pokedex_html_path}")  # Replace with the path to your HTML file
         label.setText(html_content)  # 'html_table' contains the HTML table string

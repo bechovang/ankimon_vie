@@ -27,6 +27,7 @@ no_more_news = config["misc.YouShallNotPass_Ankimon_News"] #default: false; true
 remove_levelcap = config["misc.remove_level_cap"] #default: false; true = no more news
 ssh = config["misc.ssh"] #for eduroam users - false ; default: true
 language = config["misc.language"]
+ui_language = config.get("misc.ui_language", "en")
 
 ankimon_key = config["controls.key_for_opening_closing_ankimon"]
 defeat_shortcut = config["controls.defeat_key"] #default: 5; ; Else if not 5 => controll + Key for capture

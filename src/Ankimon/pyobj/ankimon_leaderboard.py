@@ -14,28 +14,28 @@ class ApiKeyDialog(QDialog):
     def __init__(self):
         super().__init__()
         
-        self.setWindowTitle("Enter API Key and Username")
+        self.setWindowTitle(mw.translator.translate("leaderboard.window_title"))
         self.setGeometry(100, 100, 300, 200)
-        
+
         # Layout
         layout = QVBoxLayout()
-        
+
         # Username input
-        self.username_label = QLabel("Username:")
+        self.username_label = QLabel(mw.translator.translate("leaderboard.username"))
         self.username_input = QLineEdit(self)
-        self.username_input.setPlaceholderText("Enter your username")
+        self.username_input.setPlaceholderText(mw.translator.translate("leaderboard.username_placeholder"))
         layout.addWidget(self.username_label)
         layout.addWidget(self.username_input)
-        
+
         # API Key input
-        self.api_key_label = QLabel("API Key:")
+        self.api_key_label = QLabel(mw.translator.translate("leaderboard.api_key"))
         self.api_key_input = QLineEdit(self)
-        self.api_key_input.setPlaceholderText("Paste your API key")
+        self.api_key_input.setPlaceholderText(mw.translator.translate("leaderboard.api_key_placeholder"))
         layout.addWidget(self.api_key_label)
         layout.addWidget(self.api_key_input)
-        
+
         # Submit button
-        self.submit_button = QPushButton("Submit", self)
+        self.submit_button = QPushButton(mw.translator.translate("leaderboard.submit"), self)
         self.submit_button.clicked.connect(self.submit)
         layout.addWidget(self.submit_button)
         
@@ -54,14 +54,14 @@ class ApiKeyDialog(QDialog):
             self.save_credentials(credentials)
             self.accept()  # Close the dialog if everything is entered
         else:
-            showInfo("Both fields must be filled out.")
+            showInfo(mw.translator.translate("leaderboard.both_fields_required"))
             
     def save_credentials(self, credentials):
         try:
             # Save the new credentials as a single object
             with open(user_path_credentials, "w", encoding="utf-8") as f:
                 json.dump(credentials, f, indent=4)
-            showInfo("Credentials saved successfully!")
+            showInfo(mw.translator.translate("leaderboard.credentials_saved"))
         except Exception as e:
             showInfo(f"Error saving credentials: {e}")
 
@@ -82,7 +82,7 @@ def sync_data_to_leaderboard(data):
 
             # Validate credentials
             if not username or not api_key:
-                showInfo("Error: Missing credentials for Ankimon leaderboard. Please set up leaderboard from Ankimon menu or turn off in Settings.")
+                showInfo(mw.translator.translate("leaderboard.missing_credentials"))
                 return
 
 

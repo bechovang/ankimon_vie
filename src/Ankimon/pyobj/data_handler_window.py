@@ -1,4 +1,5 @@
 from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel, QTextEdit, QScrollArea
+from aqt import mw
 
 class DataHandlerWindow(QMainWindow):
     def __init__(self, data_handler):
@@ -7,7 +8,7 @@ class DataHandlerWindow(QMainWindow):
         self.init_ui()
 
     def init_ui(self):
-        self.setWindowTitle('Data Viewer')
+        self.setWindowTitle(mw.translator.translate("data_viewer.window_title"))
 
         # Create the central widget and the main layout
         central_widget = QWidget()
@@ -39,14 +40,14 @@ class DataHandlerWindow(QMainWindow):
                         scroll_layout.addWidget(entry_text_edit)
                 else:
                     # Handle non-dictionary entries
-                    error_label = QLabel("Invalid data entry (not a dictionary)")
+                    error_label = QLabel(mw.translator.translate("data_viewer.invalid_entry"))
                     error_text_edit = QTextEdit()
                     error_text_edit.setPlainText(str(entry))
                     error_text_edit.setReadOnly(True)
                     scroll_layout.addWidget(error_label)
                     scroll_layout.addWidget(error_text_edit)
         else:
-            error_label = QLabel("Data is not a list")
+            error_label = QLabel(mw.translator.translate("data_viewer.not_a_list"))
             error_text_edit = QTextEdit()
             error_text_edit.setPlainText(str(self.data_handler.data))
             error_text_edit.setReadOnly(True)

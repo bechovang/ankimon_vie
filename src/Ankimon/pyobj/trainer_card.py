@@ -1,6 +1,7 @@
 from ..resources import trainer_sprites_path, mypokemon_path
 from ..functions.trainer_functions import find_trainer_rank
 from aqt.utils import showWarning, showInfo
+from aqt import mw
 import math
 import json
 from .ankimon_leaderboard import sync_data_to_leaderboard, get_unique_pokemon, get_total_pokemon, get_shinies
@@ -71,10 +72,10 @@ class TrainerCard:
             highest_pokemon = max(pokemon_data, key=lambda p: p.get("level", 0))
             return f"{highest_pokemon.get('name', 'None')} (Level {highest_pokemon.get('level', 0)})"
         except FileNotFoundError:
-            showInfo(f"File not found: {mypokemon_path}")
+            showInfo(mw.translator.translate("trainer_card.file_not_found", path=mypokemon_path))
             return "None"
         except json.JSONDecodeError:
-            showInfo(f"Error decoding JSON from file: {mypokemon_path}")
+            showInfo(mw.translator.translate("trainer_card.json_decode_error", path=mypokemon_path))
             return "None"
     
     def get_highest_level_pokemon(self):
@@ -91,10 +92,10 @@ class TrainerCard:
             highest_pokemon = max(pokemon_data, key=lambda p: p.get("level", 0))
             return f"{highest_pokemon.get('level', 0)}"
         except FileNotFoundError:
-            showInfo(f"File not found: {mypokemon_path}")
+            showInfo(mw.translator.translate("trainer_card.file_not_found", path=mypokemon_path))
             return "None"
         except json.JSONDecodeError:
-            showInfo(f"Error decoding JSON from file: {mypokemon_path}")
+            showInfo(mw.translator.translate("trainer_card.json_decode_error", path=mypokemon_path))
             return "None"
     
     def highest_pokemon_level(self):
@@ -111,10 +112,10 @@ class TrainerCard:
             highest_pokemon = max(pokemon_data, key=lambda p: p.get("level", 0))
             return int(highest_pokemon.get('level', 0))
         except FileNotFoundError:
-            showInfo(f"File not found: {mypokemon_path}")
+            showInfo(mw.translator.translate("trainer_card.file_not_found", path=mypokemon_path))
             return int(0)
         except json.JSONDecodeError:
-            showInfo(f"Error decoding JSON from file: {mypokemon_path}")
+            showInfo(mw.translator.translate("trainer_card.json_decode_error", path=mypokemon_path))
             return int(0)
 
     def add_achievement(self, achievement):
@@ -147,7 +148,7 @@ class TrainerCard:
 
     def on_level_up(self):
         """Triggered when leveling up."""
-        self.logger.log_and_showinfo("game", f"Congratulations! You reached Level {self.level}!")
+        self.logger.log_and_showinfo("game", mw.translator.translate("trainer_card.level_up", level=self.level))
 
     def gain_xp(self, tier, allow_to_choose_move=False):
         """Add XP based on defeated Pokémon's tier."""

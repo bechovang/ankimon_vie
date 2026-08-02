@@ -33,31 +33,31 @@ class PokemonCollectionDialog(QDialog):
         # Initialize the Pokémon list as an empty list
         self.pokemon_list = []
 
-        self.setWindowTitle("Captured Pokemon")
+        self.setWindowTitle(mw.translator.translate("collection.captured_pokemon"))
         self.setMinimumWidth(750)
         self.setMinimumHeight(400)
         self.layout = QVBoxLayout(self)
 
         #add Widget to sort by ID
-        self.sort_checkbox = QCheckBox("Sort by ID")
+        self.sort_checkbox = QCheckBox(mw.translator.translate("collection.sort_by_id"))
         self.sort_checkbox.stateChanged.connect(lambda: self.sort_pokemon() if self.sort_checkbox.isChecked() else self.filter_pokemon())
 
         # Search Filter
         self.search_edit = QLineEdit()
-        self.search_edit.setPlaceholderText("Search Pokémon (by nickname, name)")
+        self.search_edit.setPlaceholderText(mw.translator.translate("collection.search_placeholder"))
         #self.search_edit.textChanged.connect(self.filter_pokemon)
-        self.search_button = QPushButton("Search")
+        self.search_button = QPushButton(mw.translator.translate("collection.search"))
         self.search_button.clicked.connect(lambda: self.sort_pokemon() if self.sort_checkbox.isChecked() else self.filter_pokemon())
 
         # Add dropdown menu for generation filtering
         self.generation_combo = QComboBox()
-        self.generation_combo.addItem("All")
-        self.generation_combo.addItems(["Generation 1", "Generation 2", "Generation 3", "Generation 4", "Generation 5", "Generation 6", "Generation 7", "Generation 8"])
+        self.generation_combo.addItem(mw.translator.translate("collection.all"))
+        self.generation_combo.addItems([mw.translator.translate("collection.generation", n=i) for i in range(1, 9)])
         self.generation_combo.currentIndexChanged.connect(lambda: self.sort_pokemon() if self.sort_checkbox.isChecked() else self.filter_pokemon())
 
         # Add dropdown menu for generation filtering
         self.type_combo = QComboBox()
-        self.type_combo.addItem("All")
+        self.type_combo.addItem(mw.translator.translate("collection.all"))
         self.type_combo.addItems(["Normal", "Fire", "Water", "Electric", "Grass", "Ice", "Fighting", "Poison", "Ground", "Flying", "Psychic", "Bug", "Rock", "Ghost", "Dragon", "Dark", "Steel", "Fairy"])
         self.type_combo.currentIndexChanged.connect(lambda: self.sort_pokemon() if self.sort_checkbox.isChecked() else self.filter_pokemon())
 
@@ -190,16 +190,16 @@ class PokemonCollectionDialog(QDialog):
                 name_label = self.create_label(
                     pokemon_nickname or f"{pokemon_name.capitalize()} {self.get_gender_symbol(pokemon_gender)}", 12
                 )
-                level_label = self.create_label(f"Level: {pokemon_level}", 8)
-                type_label = self.create_label("Type: " + " ".join([t.capitalize() for t in pokemon_type]), 8)
-                ability_label = self.create_label(f"Ability: {pokemon_ability.capitalize()}", 8)
+                level_label = self.create_label(mw.translator.translate("collection.level_value", level=pokemon_level), 8)
+                type_label = self.create_label(mw.translator.translate("collection.type_value", types=" ".join([t.capitalize() for t in pokemon_type])), 8)
+                ability_label = self.create_label(mw.translator.translate("collection.ability_value", ability=pokemon_ability.capitalize()), 8)
 
                 image_label = QLabel()
                 image_label.setPixmap(pixmap)
                 image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-                pokemon_button = self.create_button("Show me Details", pokemon, "Show Details")
-                choose_pokemon_button = self.create_button("Pick as main Pokemon", pokemon, "Pick As Main")
+                pokemon_button = self.create_button(mw.translator.translate("collection.show_details"), pokemon, "Show Details")
+                choose_pokemon_button = self.create_button(mw.translator.translate("collection.pick_as_main"), pokemon, "Pick As Main")
 
                 container_layout = QVBoxLayout()
                 if self.gif_in_collection:
@@ -234,7 +234,7 @@ class PokemonCollectionDialog(QDialog):
 
             self.setLayout(self.layout)
         except FileNotFoundError:
-            self.layout.addWidget(QLabel(f"Can't open the Saving File. {mypokemon_path}"))
+            self.layout.addWidget(QLabel(mw.translator.translate("collection.cant_open_saving_file", path=mypokemon_path)))
 
     def adjust_pixmap_size(self, pixmap, max_width, max_height):
         original_width = pixmap.width()
@@ -357,10 +357,10 @@ class PokemonCollectionDialog(QDialog):
                             filtered_pokemon.append(pokemon)
                     self.refresh_collection(filtered_pokemon)
                     if not filtered_pokemon:
-                        showInfo("No Pokemon for the desired filter options!")
+                        showInfo(mw.translator.translate("collection.no_filter_results"))
                     self.current_page=0
             except FileNotFoundError:
-                self.layout.addWidget(QLabel(f"Can't open the Saving File. {mypokemon_path}"))
+                self.layout.addWidget(QLabel(mw.translator.translate("collection.cant_open_saving_file", path=mypokemon_path)))
         else:
             self.sort_pokemon()
     
@@ -411,10 +411,10 @@ class PokemonCollectionDialog(QDialog):
                         filtered_pokemon.append(pokemon)
                 self.refresh_collection(filtered_pokemon)
                 if not filtered_pokemon:
-                    showInfo("No Pokemon for the desired filter options!")
+                    showInfo(mw.translator.translate("collection.no_filter_results"))
                 self.current_page=0
         except FileNotFoundError:
-            self.layout.addWidget(QLabel(f"Can't open the Saving File. {mypokemon_path}"))
+            self.layout.addWidget(QLabel(mw.translator.translate("collection.cant_open_saving_file", path=mypokemon_path)))
         
 
     def add_pagination_controls(self, pokemon_list=[]):
@@ -423,12 +423,12 @@ class PokemonCollectionDialog(QDialog):
         total_pages = (len(pokemon_list) + self.items_per_page - 1) // self.items_per_page
 
         if self.current_page > 0:
-            prev_button = QPushButton("Previous")
+            prev_button = QPushButton(mw.translator.translate("collection.previous"))
             prev_button.clicked.connect(lambda: self.previous_page(pokemon_list))  # Passing pokemon_list to previous_page
             self.pagination_layout.addWidget(prev_button)
 
         if self.current_page < total_pages - 1:
-            next_button = QPushButton("Next")
+            next_button = QPushButton(mw.translator.translate("collection.next"))
             next_button.clicked.connect(lambda: self.next_page(pokemon_list))  # Passing pokemon_list to next_page
             self.pagination_layout.addWidget(next_button)
     
@@ -458,16 +458,16 @@ def PokemonTrade(name, id, level, ability, iv, ev, gender, attacks, position):
     if not found:
         # Create a main window
         window = QDialog()
-        window.setWindowTitle(f"Trade Pokemon {name}")
+        window.setWindowTitle(mw.translator.translate("collection.trade_pokemon_title", name=name))
         # Create an input field for error code
         trade_code_input = QLineEdit()
-        trade_code_input.setPlaceholderText("Enter Pokemon Code you want to Trade for")
+        trade_code_input.setPlaceholderText(mw.translator.translate("collection.enter_trade_code"))
 
         # Create a button to save the input
-        trade_button = QPushButton("Trade Pokemon")
+        trade_button = QPushButton(mw.translator.translate("collection.trade_pokemon_button"))
         qconnect(trade_button.clicked, lambda: PokemonTradeIn(trade_code_input.text(), name, position))
         # Information label
-        info = "Pokemon Infos have been Copied to your Clipboard! \nNow simply paste this text into Teambuilder in PokemonShowdown. \nNote: Fight in the [Gen 9] Anything Goes - Battle Mode"
+        info = mw.translator.translate("collection.trade_info_copied")
 
         pokemon_ev = ','.join([f"{value}" for stat, value in ev.items()])
         pokemon_iv = ','.join([f"{value}" for stat, value in iv.items()])
@@ -492,7 +492,7 @@ def PokemonTrade(name, id, level, ability, iv, ev, gender, attacks, position):
         # Concatenating details to form a single string
         info = f"{id},{level},{gender},{pokemon_ev},{pokemon_iv},{attacks_id_string}"
 
-        Trade_Info = QLabel(f"{name} Code: {info}")
+        Trade_Info = QLabel(mw.translator.translate("collection.trade_code_info", name=name, info=info))
 
         # Create a layout and add the labels
         layout = QVBoxLayout()
@@ -508,7 +508,7 @@ def PokemonTrade(name, id, level, ability, iv, ev, gender, attacks, position):
 
         window.exec()
     else:
-        showWarning("You cant trade your Main Pokemon ! \n Please pick a different Main Pokemon and then you can trade this one.")
+        showWarning(mw.translator.translate("collection.cant_trade_main"))
 
 
 def PokemonTradeIn(number_code, old_pokemon_name, position):
@@ -568,9 +568,9 @@ def PokemonTradeIn(number_code, old_pokemon_name, position):
                 "evos": evos
         }
         trade_pokemon(f"{old_pokemon_name}", pokemon_trade, position)
-        logger.log_and_showinfo("info",f"You have sucessfully traded your {old_pokemon_name} for {name} ")
+        logger.log_and_showinfo("info", mw.translator.translate("collection.traded_for", old_pokemon_name=old_pokemon_name, name=name))
     else:
-        showWarning("Please enter a valid Code !")
+        showWarning(mw.translator.translate("collection.enter_valid_code"))
 
 from aqt.utils import showWarning
 
@@ -591,13 +591,13 @@ def trade_pokemon(old_pokemon_name, pokemon_trade, position):
         pokemon_list[position] = pokemon_trade  # Replace with new Pokemon data
         break
     else:
-        showWarning("info",f"Pokemon named '{old_pokemon_name}' not found.")
+        showWarning("info", mw.translator.translate("collection.pokemon_not_found", name=old_pokemon_name))
         return
 
     # Write the updated data back to the file
     try:
         with open(mypokemon_path, 'w') as file:
             json.dump(pokemon_list, file, indent=2)
-        showWarning(f"{old_pokemon_name} has been traded successfully!")
+        showWarning(mw.translator.translate("collection.traded_successfully", name=old_pokemon_name))
     except Exception as e:
-        showWarning(f"An error occurred while writing to the file: {e}")
+        showWarning(mw.translator.translate("collection.write_error", error=e))

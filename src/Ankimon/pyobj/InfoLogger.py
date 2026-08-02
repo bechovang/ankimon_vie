@@ -1,6 +1,7 @@
 import logging
 from PyQt6.QtWidgets import QMessageBox, QTextEdit, QVBoxLayout, QDialog, QPushButton, QApplication
 from PyQt6.QtCore import Qt
+from aqt import mw
 import os
 
 class ShowInfoLogger:
@@ -51,7 +52,7 @@ class ShowInfoLogger:
         if level in ['info', 'warning', 'error']:
             # Show the message in a QMessageBox dialog
             msg_box = QMessageBox()
-            msg_box.setWindowTitle("Log Message")
+            msg_box.setWindowTitle(mw.translator.translate("logger_window.message_title"))
             msg_box.setText(message)
             msg_box.setIcon(QMessageBox.Icon.Information)
             msg_box.exec()
@@ -79,7 +80,7 @@ class ShowInfoLogger:
         else:
             # Create and show the dialog if it's not open
             self.log_dialog = QDialog()
-            self.log_dialog.setWindowTitle("Log Viewer")
+            self.log_dialog.setWindowTitle(mw.translator.translate("logger_window.viewer_title"))
             self.log_dialog.resize(400, 300)
             
             # Set dialog as a tool window to prevent it from taking focus from the main window
@@ -95,11 +96,11 @@ class ShowInfoLogger:
                 text_edit.setPlainText(log_content)
             
             # Add a refresh button to reload the log content
-            refresh_button = QPushButton("Refresh")
+            refresh_button = QPushButton(mw.translator.translate("logger_window.refresh"))
             refresh_button.clicked.connect(lambda: text_edit.setPlainText(open(self.log_file).read()))
             
             # Add a clear button to clear the log file content
-            clear_button = QPushButton("Clear")
+            clear_button = QPushButton(mw.translator.translate("logger_window.clear"))
             clear_button.clicked.connect(self.clear_log_file)
 
             # Layout setup

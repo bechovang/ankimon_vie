@@ -41,6 +41,7 @@
     "misc.remove_level_cap": false,
     "misc.leaderboard": false,
     "misc.language": 9,
+    "misc.ui_language": "en",
     "misc.ssh": true,
     "misc.YouShallNotPass_Ankimon_News": false,
     "misc.discord_rich_presence": false,

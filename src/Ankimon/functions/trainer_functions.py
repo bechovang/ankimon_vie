@@ -4,6 +4,7 @@ from ..resources import mypokemon_path, badges_list_path
 from .pokemon_functions import find_experience_for_level
 from .pokedex_functions import check_evolution_for_pokemon, return_name_for_id
 from aqt.utils import showInfo, showWarning
+from aqt import mw
 
 def find_trainer_rank(highest_level, trainer_level):
     """
@@ -34,33 +35,33 @@ def find_trainer_rank(highest_level, trainer_level):
 
         # Determine rank based on achievements
         if caught_pokemon >= 900 and highest_level >= 99 and trainer_level >= 100 and shiny_pokemon_count >= 50:
-            rank = "Legendary Trainer"
+            rank = mw.translator.translate("rank.legendary")
         elif caught_pokemon >= 800 and highest_level >= 95 and trainer_level >= 80 and shiny_pokemon_count >= 25:
-            rank = "Grand Champion"
+            rank = mw.translator.translate("rank.grand_champion")
         elif caught_pokemon >= 700 and highest_level >= 90 and trainer_level >= 70 and shiny_pokemon_count >= 20:
-            rank = "Champion"
+            rank = mw.translator.translate("rank.champion")
         elif caught_pokemon >= 600 and highest_level >= 80 and trainer_level >= 60 and shiny_pokemon_count >= 10 and badge_count >= 8:
-            rank = "Master Trainer"
+            rank = mw.translator.translate("rank.master_trainer")
         elif caught_pokemon >= 500 and highest_level >= 75 and trainer_level >= 50 and shiny_pokemon_count >= 5 and badge_count > 6:
-            rank = "Elite"
+            rank = mw.translator.translate("rank.elite")
         elif caught_pokemon >= 400 and highest_level >= 70 and trainer_level >= 45 and shiny_pokemon_count >= 3 and badge_count > 5:
-            rank = "Elite Trainer"
+            rank = mw.translator.translate("rank.elite_trainer")
         elif caught_pokemon >= 350 and highest_level >= 60 and trainer_level >= 40 and shiny_pokemon_count >= 2 and badge_count > 4:
-            rank = "Advanced Trainer"
+            rank = mw.translator.translate("rank.advanced_trainer")
         elif caught_pokemon >= 300 and highest_level >= 50 and trainer_level >= 30 and shiny_pokemon_count > 0 and badge_count > 3:
-            rank = "Veteran"
+            rank = mw.translator.translate("rank.veteran")
         elif caught_pokemon >= 250 and highest_level >= 40 and trainer_level >= 20 and shiny_pokemon_count > 0:
-            rank = "Skilled Trainer"
+            rank = mw.translator.translate("rank.skilled_trainer")
         elif caught_pokemon >= 150 and highest_level >= 30 and trainer_level >= 10:
-            rank = "Rookie"
+            rank = mw.translator.translate("rank.rookie")
         else:
-            rank = "Novice Trainer"  # Default rank for beginners
+            rank = mw.translator.translate("rank.novice_trainer")  # Default rank for beginners
 
         return rank
 
     except FileNotFoundError:
         print("Error: One of the files (Pokedex or MyPokemon) could not be found.")
-        return "Unknown Rank"
+        return mw.translator.translate("rank.unknown")
 
 def xp_share_gain_exp(logger, settings_obj, evo_window, main_pokemon_id, exp, xp_share_individual_id):
     # Ensure that the XP Share Pokémon is set and different from the main Pokémon

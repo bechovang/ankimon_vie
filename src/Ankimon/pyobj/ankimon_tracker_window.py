@@ -30,7 +30,7 @@ class AnkimonTrackerWindow:
             left_layout = QVBoxLayout()
 
             # Title label
-            self.title_label = QLabel("Ankimon Tracker Stats")  # Store the title label
+            self.title_label = QLabel(mw.translator.translate("tracker.window_title"))  # Store the title label
             self.title_label.setFont(QFont("Arial", 20, QFont.Weight.Bold))
             self.title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
             self.title_label.setStyleSheet(f"color: {self.get_text_color()}; padding: 2px;")
@@ -56,13 +56,14 @@ class AnkimonTrackerWindow:
             # Main Pokémon stats
             main_pokemon_stats = self.tracker.get_main_pokemon_stats()
             if main_pokemon_stats:
-                stats_box = QGroupBox(f"Main Pokémon: {self.tracker.main_pokemon.name}")
+                stats_box = QGroupBox(mw.translator.translate("tracker.main_pokemon", name=self.tracker.main_pokemon.name))
                 stats_box.setFont(QFont("Arial", 14, QFont.Weight.Bold))
                 stats_box.setStyleSheet(f"color: {self.get_text_color()}; padding: 2px; QGroupBox::title {{ color: {self.get_text_color()}; }}")
                 stats_layout = QGridLayout()
                 row, col = 0, 0
                 for key, value in main_pokemon_stats.items():
-                    label = QLabel(f"{key.capitalize()}: {value if value is not None else 'N/A'}")
+                    display_value = value if value is not None else mw.translator.translate("tracker.na")
+                    label = QLabel(f"{key.capitalize()}: {display_value}")
                     label.setStyleSheet(f"color: {self.get_text_color()}; padding: 2px;")
                     stats_layout.addWidget(label, row, col)
                     self.stats_labels[f"main_pokemon_{key}"] = label
@@ -76,13 +77,14 @@ class AnkimonTrackerWindow:
             # Enemy Pokémon stats
             enemy_pokemon_stats = self.tracker.get_enemy_pokemon_stats()
             if enemy_pokemon_stats:
-                stats_box_enemy = QGroupBox(f"Enemy Pokémon: {self.tracker.enemy_pokemon.name}")
+                stats_box_enemy = QGroupBox(mw.translator.translate("tracker.enemy_pokemon", name=self.tracker.enemy_pokemon.name))
                 stats_box_enemy.setFont(QFont("Arial", 14, QFont.Weight.Bold))
                 stats_box_enemy.setStyleSheet(f"color: {self.get_text_color()}; padding: 3px; QGroupBox::title {{ color: {self.get_text_color()}; }}")
                 enemy_stats_layout = QGridLayout()
                 row, col = 0, 0
                 for key, value in enemy_pokemon_stats.items():
-                    label = QLabel(f"{key.capitalize()}: {value if value is not None else 'N/A'}")
+                    display_value = value if value is not None else mw.translator.translate("tracker.na")
+                    label = QLabel(f"{key.capitalize()}: {display_value}")
                     label.setStyleSheet(f"color: {self.get_text_color()}; padding: 2px;")
                     enemy_stats_layout.addWidget(label, row, col)
                     self.stats_labels[f"enemy_pokemon_{key}"] = label
@@ -99,7 +101,7 @@ class AnkimonTrackerWindow:
             # Add spacing
             self.layout.addItem(QSpacerItem(20, 40, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum))
             self.window.setLayout(self.layout)
-            self.window.setWindowTitle("Ankimon Tracker Stats")
+            self.window.setWindowTitle(mw.translator.translate("tracker.window_title"))
             self.window.show()
 
     def update_stats(self):

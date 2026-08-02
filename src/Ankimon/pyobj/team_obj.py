@@ -1,3 +1,5 @@
+from aqt import mw
+
 class TeamPokemonObject:
     def __init__(self, pokemon_1=None, pokemon_2=None, pokemon_3=None, pokemon_4=None, pokemon_5=None, pokemon_6=None):
         self.save_directory = team_json_path
@@ -14,7 +16,7 @@ class TeamPokemonObject:
         # Use setattr to dynamically set the attribute based on team_position
         setattr(self, f"pokemon_{team_position}", PokemonObject)
         mw.deckBrowser.refresh()
-        tooltip(f"Pokemon {team_position} has been successfully switched out with {PokemonObject.name}.")
+        tooltip(mw.translator.translate("team_obj.switched_out", position=team_position, name=PokemonObject.name))
         self.save_team()
         #if team_position == 1:
         #    MainPokemonObject = pokemon_1

@@ -329,7 +329,21 @@ def get_item_description(item_name, language_id):
         print(f"An error occurred: {e}")
         return None
     
-def load_custom_font(font_size, language):
+def load_custom_font(font_size, language, ui_language=None):
+    # Vietnamese uses combining diacritics (ấ, ầ, ậ, ư, ơ, đ, ...) which the
+    # bundled GameBoy bitmap fonts (Early GameBoy / PKMN Western) do not support,
+    # so they would render as missing-glyph boxes. Fall back to a Unicode system
+    # font when the interface language is Vietnamese.
+    if ui_language is None:
+        try:
+            from .config_var import ui_language as _ui_language
+            ui_language = _ui_language
+        except Exception:
+            ui_language = "en"
+    if str(ui_language) == "vi":
+        font = QFont("Segoe UI")
+        font.setPointSize(int(font_size))
+        return font
     if language == 1:
         font_file = "pkmn_w.ttf"
         font_file_path = font_path / font_file

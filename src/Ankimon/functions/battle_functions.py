@@ -2,6 +2,7 @@ import random
 import json
 from ..resources import effectiveness_chart_file_path
 from .battle_text_functions import effectiveness_text
+from aqt import mw
 
 def get_effectiveness(move_type, def_type):
     move_type = move_type.capitalize()
@@ -68,6 +69,7 @@ def calculate_hp(base_stat_hp, level, ev, iv):
     return hp
 
 def status_effect(pokemon_obj, move, slp_counter, msg, acc):
+    t = mw.translator.translate
     # Extend the existing dictionary with the "Fighting" status
     stats = pokemon_obj._battle_stats
     stat = pokemon_obj.battle_status
@@ -75,26 +77,26 @@ def status_effect(pokemon_obj, move, slp_counter, msg, acc):
     name = pokemon_obj.name
     if stat == "par":
         stats["spe"] = stats["spe"] * 0.5
-        msg += f" {name.capitalize()}'s speed is reduced."
+        msg += " " + t("battle.speed_reduced", name=name.capitalize())
         missing_chance = 1/4
         random_number = random.random()
         if random_number < missing_chance:
-            msg += (f"{name} is paralyzed! It can't move!")
+            msg += t("battle.paralyzed_cant_move", name=name)
             acc = 0
     elif stat == "brn":
         dmg = 1/16 * pokemon_obj.calculate_max_hp()
         hp -= dmg
-        msg += (f"Wild {name} was hurt by burning!")
+        msg += t("battle.hurt_burn", name=name)
     elif stat == "psn":
         max_hp = pokemon_obj.calculate_max_hp()
         dmg = 1 / 8 * max_hp
         hp -= dmg
-        msg += (f"The wild {name} was hurt by its poisoning!")
+        msg += t("battle.hurt_poison", name=name)
     elif stat == "tox":
         max_hp = pokemon_obj.calculate_max_hp()
         dmg = ((random.randint(1,3)) / 16 * max_hp)
         hp -= dmg
-        msg += (f"The wild {name} is badly poisoned and was hurt by is poisoning!")
+        msg += t("battle.badly_poisoned", name=name)
         stat = "psn"
     elif stat == "frz":
         free_chance = 20 / 100
@@ -102,16 +104,16 @@ def status_effect(pokemon_obj, move, slp_counter, msg, acc):
             free_chance = 1
         random_number = random.random()
         if random_number < free_chance:
-            msg += (f"Wild {name} is frozen solid!")
+            msg += t("battle.frozen", name=name)
             acc = 0
         else:
             stat = None
-            msg += (f"Wild {name} is no longer frozen!")
+            msg += t("battle.thawed", name=name)
     elif stat == "slp":
             if slp_counter > 1:
                 slp_counter -= 1
-                msg += (f"Wild {name} is asleep!")
+                msg += t("battle.asleep", name=name)
             else:
                 stat = None
-                msg += (f"Wild {name} is no longer asleep!")
+                msg += t("battle.woke_up", name=name)
     return msg, acc, stat, battle_stats

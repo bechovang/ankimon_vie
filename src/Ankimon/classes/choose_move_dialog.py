@@ -1,4 +1,5 @@
 import sys
+from aqt import mw
 from PyQt6.QtWidgets import QApplication, QDialog, QVBoxLayout, QLabel
 from PyQt6.QtGui import QFont
 from PyQt6.QtCore import Qt
@@ -10,7 +11,7 @@ class MoveSelectionDialog(QDialog):
         super().__init__()
 
         # Dialog settings
-        self.setWindowTitle("Select a Move")
+        self.setWindowTitle(mw.translator.translate("move_dialog.window_title"))
         self.resize(300, 200)
         self.selected_move = random.choice(mainpokemon_attacks)
         self.mainpokemon_attacks = mainpokemon_attacks
@@ -20,7 +21,7 @@ class MoveSelectionDialog(QDialog):
         self.setLayout(layout)
 
         # Add a title label
-        title_label = QLabel("Press a number (1-4) or click to select a move:")
+        title_label = QLabel(mw.translator.translate("move_dialog.instruction"))
         title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         title_label.setFont(QFont("Arial", 14, QFont.Weight.Bold))
         layout.addWidget(title_label)
@@ -29,8 +30,11 @@ class MoveSelectionDialog(QDialog):
         self.move_labels = []
         for index, move in enumerate(mainpokemon_attacks):
             move_detail = find_details_move(move)
-            move_label = QLabel(f"{index + 1}. {move_detail.get('name', move.capitalize())}({move_detail.get('basePower', 'Unknown')}): {move_detail.get('shortDesc', 'Unknown')}")
-            move_label.setToolTip(f"{move_detail.get('desc', 'No description available')}")
+            move_name = move_detail.get('name', move.capitalize())
+            move_power = move_detail.get('basePower', mw.translator.translate("sync.unknown"))
+            move_desc = move_detail.get('shortDesc', mw.translator.translate("sync.unknown"))
+            move_label = QLabel(mw.translator.translate("move_dialog.move_entry", index=index + 1, name=move_name, power=move_power, desc=move_desc))
+            move_label.setToolTip(move_detail.get('desc', mw.translator.translate("settings.no_description")))
             move_label.setFont(QFont("Arial", 12))
             move_label.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
             move_label.setStyleSheet("border: 1px solid #ccc; border-radius: 0px;")  # Removed padding, reduced border-radius

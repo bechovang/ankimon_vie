@@ -19,19 +19,14 @@ class CheckPokemonData(QDialog):
 
     def setup_ui(self):
         # Set the window title for the dialog
-        self.setWindowTitle("Ankimon Pokemon Sync")
+        self.setWindowTitle(mw.translator.translate("sync.window_title"))
 
         # Create a QLabel instance
-        message = (
-            "Ankimon Pokemon Sync:\n"
-            "There is a difference between the Ankiweb Synced Pokémon data and the local Pokémon data.\n"
-            "Please choose to either load the local data and sync to Ankiweb or sync Ankiweb data to your local storage."
-        )
-        self.label = QLabel(message, self)
+        self.label = QLabel(mw.translator.translate("sync.dialog_message"), self)
 
         # Create two QPushButtons for syncing options
-        self.sync_local_button = QPushButton("Export data to ankiweb", self)
-        self.sync_ankiweb_button = QPushButton("Import data from ankiweb", self)
+        self.sync_local_button = QPushButton(mw.translator.translate("sync.export_to_ankiweb"), self)
+        self.sync_ankiweb_button = QPushButton(mw.translator.translate("sync.import_from_ankiweb"), self)
         self.sync_local_button.clicked.connect(self.sync_data_to_ankiweb)
         self.sync_ankiweb_button.clicked.connect(self.sync_data_to_local)
 
@@ -87,22 +82,22 @@ class CheckPokemonData(QDialog):
                 json.dump(self.pokemon_collection_web_data, file, ensure_ascii=False, indent=4)
             with open(self.mainpokemon_path, 'w', encoding='utf-8') as file:
                 json.dump(self.mainpokemon_web_data, file, ensure_ascii=False, indent=4)
-            showInfo("Ankiweb Data synced to local.")
+            showInfo(mw.translator.translate("sync.synced_to_local"))
         except Exception as e:
-            showWarning("Failed to sync data to local: " + str(e))
+            showWarning(mw.translator.translate("sync.failed_sync_local", error=str(e)))
         self.close()
 
     def sync_data_to_ankiweb(self):
         try:
             self.config.set("pokemon_collection", self.pokemon_collection_sync_data)
             self.config.set("mainpokemon", self.mainpokemon_sync_data)
-            showInfo("Local Data synced to AnkiWeb.")
+            showInfo(mw.translator.translate("sync.synced_to_ankiweb"))
         except Exception as e:
-            showWarning("Failed to sync data to AnkiWeb: " + str(e))
+            showWarning(mw.translator.translate("sync.failed_sync_ankiweb", error=str(e)))
         self.close()
 
     def sync_on_anki_close(self):
-        tooltip("Syncing PokemonData to AnkiWeb")
+        tooltip(mw.translator.translate("sync.syncing_tooltip"))
         self.get_pokemon_data()
         self.config.set("pokemon_collection", self.pokemon_collection_sync_data)
         self.config.set("mainpokemon", self.mainpokemon_sync_data)
@@ -113,70 +108,69 @@ class CheckPokemonData(QDialog):
             self.get_pokemon_data()
             self.config.set("pokemon_collection", self.pokemon_collection_sync_data)
             self.config.set("mainpokemon", self.mainpokemon_sync_data)
-            tooltip("Saved Ankimon Configuration, Please Restart Anki")
+            tooltip(mw.translator.translate("sync.saved_config_restart"))
             modified_text = json.dumps(config, indent=4)
             return modified_text
         except json.JSONDecodeError:
-            showWarning("Invalid JSON format")
+            showWarning(mw.translator.translate("sync.invalid_json"))
             return text
 
     def display_pokemon_info(self, pokemon_data):
         # Display Pokémon information
-        pokemon_info = (
-            f"Name: {pokemon_data['name']}\n"
-            f"Gender: {pokemon_data['gender']}\n"
-            f"Level: {pokemon_data['level']}\n"
-            f"ID: {pokemon_data['id']}\n"
-            f"Ability: {pokemon_data['ability']}\n"
-            f"Type: {', '.join(pokemon_data['type'])}\n"
-            f"Stats:\n"
-            f"  HP: {pokemon_data['stats']['hp']}\n"
-            f"  Attack: {pokemon_data['stats']['atk']}\n"
-            f"  Defense: {pokemon_data['stats']['def']}\n"
-            f"  Special Attack: {pokemon_data['stats']['spa']}\n"
-            f"  Special Defense: {pokemon_data['stats']['spd']}\n"
-            f"  Speed: {pokemon_data['stats']['spe']}\n"
-            f"XP: {pokemon_data['stats']['xp']}\n"
-            f"EVs:\n"
-            f"  HP: {pokemon_data['ev']['hp']}\n"
-            f"  Attack: {pokemon_data['ev']['atk']}\n"
-            f"  Defense: {pokemon_data['ev']['def']}\n"
-            f"  Special Attack: {pokemon_data['ev']['spa']}\n"
-            f"  Special Defense: {pokemon_data['ev']['spd']}\n"
-            f"  Speed: {pokemon_data['ev']['spe']}\n"
-            f"IVs:\n"
-            f"  HP: {pokemon_data['iv']['hp']}\n"
-            f"  Attack: {pokemon_data['iv']['atk']}\n"
-            f"  Defense: {pokemon_data['iv']['def']}\n"
-            f"  Special Attack: {pokemon_data['iv']['spa']}\n"
-            f"  Special Defense: {pokemon_data['iv']['spd']}\n"
-            f"  Speed: {pokemon_data['iv']['spe']}\n"
-            f"Attacks: {', '.join(pokemon_data['attacks'])}\n"
-            f"Base Experience: {pokemon_data['base_experience']}\n"
-            f"Current HP: {pokemon_data['current_hp']}\n"
-            f"Growth Rate: {pokemon_data['growth_rate']}\n"
-            f"Evolves to: {', '.join(pokemon_data['evos'])}\n"
-            f"Individual ID: {pokemon_data['individual_id']}\n"
-            f"Everstone: {pokemon_data['everstone']}\n"
-            f"Shiny: {pokemon_data['shiny']}\n"
-            f"Friendship: {pokemon_data['friendship']}\n"
-            f"Pokémon Defeated: {pokemon_data['pokemon_defeated']}\n"
-            f"Captured Date: {pokemon_data['captured_date']}"
+        pokemon_info = mw.translator.translate(
+            "sync.pokemon_info",
+            name=pokemon_data['name'],
+            gender=pokemon_data['gender'],
+            level=pokemon_data['level'],
+            id=pokemon_data['id'],
+            ability=pokemon_data['ability'],
+            type=', '.join(pokemon_data['type']),
+            stats_hp=pokemon_data['stats']['hp'],
+            stats_atk=pokemon_data['stats']['atk'],
+            stats_def=pokemon_data['stats']['def'],
+            stats_spa=pokemon_data['stats']['spa'],
+            stats_spd=pokemon_data['stats']['spd'],
+            stats_spe=pokemon_data['stats']['spe'],
+            xp=pokemon_data['stats']['xp'],
+            ev_hp=pokemon_data['ev']['hp'],
+            ev_atk=pokemon_data['ev']['atk'],
+            ev_def=pokemon_data['ev']['def'],
+            ev_spa=pokemon_data['ev']['spa'],
+            ev_spd=pokemon_data['ev']['spd'],
+            ev_spe=pokemon_data['ev']['spe'],
+            iv_hp=pokemon_data['iv']['hp'],
+            iv_atk=pokemon_data['iv']['atk'],
+            iv_def=pokemon_data['iv']['def'],
+            iv_spa=pokemon_data['iv']['spa'],
+            iv_spd=pokemon_data['iv']['spd'],
+            iv_spe=pokemon_data['iv']['spe'],
+            attacks=', '.join(pokemon_data['attacks']),
+            base_experience=pokemon_data['base_experience'],
+            current_hp=pokemon_data['current_hp'],
+            growth_rate=pokemon_data['growth_rate'],
+            evolves_to=', '.join(pokemon_data['evos']),
+            individual_id=pokemon_data['individual_id'],
+            everstone=pokemon_data['everstone'],
+            shiny=pokemon_data['shiny'],
+            friendship=pokemon_data['friendship'],
+            pokemon_defeated=pokemon_data['pokemon_defeated'],
+            captured_date=pokemon_data['captured_date'],
         )
 
         return pokemon_info
 
     def display_data_comparison(self):
+        unknown = mw.translator.translate("sync.unknown")
         # Main Pokémon Data Comparison
         local_main_differences = []
         web_main_differences = []
 
         for local, ankiweb in zip(self.mainpokemon_sync_data, self.mainpokemon_web_data):
-            pokemon_name = local.get('name', "Unknown")
-            individual_id = local.get('individual_id', "Unknown")
+            pokemon_name = local.get('name', unknown)
+            individual_id = local.get('individual_id', unknown)
             for key in local:
-                local_value = local.get(key, "Unknown")
-                web_value = ankiweb.get(key, "Unknown")
+                local_value = local.get(key, unknown)
+                web_value = ankiweb.get(key, unknown)
                 if local_value != web_value:
                     local_main_differences.append(f"{pokemon_name} - {individual_id} - {key}: {local_value}")
                     web_main_differences.append(f"{pokemon_name} - {individual_id} - {key}: {web_value}")
@@ -186,11 +180,11 @@ class CheckPokemonData(QDialog):
         web_pokemon_differences = []
 
         for local, ankiweb in zip(self.pokemon_collection_sync_data, self.pokemon_collection_web_data):
-            pokemon_name = local.get('name', "Unknown")
-            individual_id = local.get('individual_id', "Unknown")
+            pokemon_name = local.get('name', unknown)
+            individual_id = local.get('individual_id', unknown)
             for key in local:
-                local_value = local.get(key, "Unknown")
-                web_value = ankiweb.get(key, "Unknown")
+                local_value = local.get(key, unknown)
+                web_value = ankiweb.get(key, unknown)
                 if local_value != web_value:
                     local_pokemon_differences.append(f"{pokemon_name} - {individual_id} - {key}: {local_value}")
                     web_pokemon_differences.append(f"{pokemon_name} - {individual_id} - {key}: {web_value}")
@@ -200,11 +194,11 @@ class CheckPokemonData(QDialog):
 
         # Main Pokémon Data Differences
         if local_main_differences:
-            local_text_content += f"**Main Pokémon Local Data Differences:**\n\n" + "\n".join(local_main_differences) + "\n\n"
+            local_text_content += mw.translator.translate("sync.diff.main_local") + "\n\n" + "\n".join(local_main_differences) + "\n\n"
 
         # Pokémon Collection Data Differences
         if local_pokemon_differences:
-            local_text_content += f"**Pokémon Collection Local Data Differences:**\n\n" + "\n".join(local_pokemon_differences)
+            local_text_content += mw.translator.translate("sync.diff.collection_local") + "\n\n" + "\n".join(local_pokemon_differences)
 
         # Set the local text area with the prepared content
         self.local_text_area.setPlainText(local_text_content)
@@ -214,11 +208,11 @@ class CheckPokemonData(QDialog):
 
         # Main Pokémon Web Data Differences
         if web_main_differences:
-            web_text_content += f"**Main Pokémon Web Data Differences:**\n\n" + "\n".join(web_main_differences) + "\n\n"
+            web_text_content += mw.translator.translate("sync.diff.main_web") + "\n\n" + "\n".join(web_main_differences) + "\n\n"
 
         # Pokémon Collection Web Data Differences
         if web_pokemon_differences:
-            web_text_content += f"**Pokémon Collection Web Data Differences:**\n\n" + "\n".join(web_pokemon_differences)
-        
+            web_text_content += mw.translator.translate("sync.diff.collection_web") + "\n\n" + "\n".join(web_pokemon_differences)
+
         # Set the web text area with the prepared content
         self.web_text_area.setPlainText(web_text_content)

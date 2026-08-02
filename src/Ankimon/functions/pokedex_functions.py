@@ -1,4 +1,5 @@
 from ..resources import pokedex_path, pokedesc_lang_path, pokeapi_db_path, pokenames_lang_path, mypokemon_path, learnset_path, moves_file_path, poke_evo_path, poke_species_path, csv_file_items_cost, pokemon_csv
+from aqt import mw
 from aqt.utils import showWarning
 import json
 import random
@@ -131,7 +132,7 @@ def get_pokemon_descriptions(species_id, language):
         else:
             return descriptions[0]
     else:
-        return "Description not found."
+        return mw.translator.translate("poke.desc_not_found")
 
 #TODO change all the functions to use language as a parameter
 def get_pokemon_diff_lang_name(pokemon_id, language):
@@ -143,7 +144,7 @@ def get_pokemon_diff_lang_name(pokemon_id, language):
             species_id, lang_id, name, genus = row
             if int(species_id) == pokemon_id and int(lang_id) == language:
                 return name
-    return "No Translation in this language"  # Return None if no match is found
+    return mw.translator.translate("poke.no_translation")  # Return None if no match is found
 
 def extract_ids_from_file():
     try:

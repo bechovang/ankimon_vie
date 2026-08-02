@@ -1,6 +1,7 @@
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *
 from PyQt6.QtGui import *
+from aqt import mw
 from ..const import status_colors_label, status_colors_html
 
 def create_status_label(status_name):
@@ -21,7 +22,7 @@ def create_status_label(status_name):
             f"color: {colors.get('text_color', '#000000')};"
         )
     else:
-        label = QLabel("Unknown Status")
+        label = QLabel(mw.translator.translate("gui.unknown_status"))
         label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         label.setStyleSheet(
             "padding: 5px 10px;"
@@ -99,6 +100,6 @@ def create_status_html(status_name, settings_obj):
             ">{colors['name']}</div>
             """
     else:
-        html = "<div>Unknown Status</div>"
+        html = f"<div>{mw.translator.translate('gui.unknown_status')}</div>"
 
     return html

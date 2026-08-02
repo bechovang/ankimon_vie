@@ -9,7 +9,7 @@ import os
 class TrainerSpriteDialog(QDialog):
     def __init__(self, settings_obj, parent=mw):
         super().__init__(parent)
-        self.setWindowTitle("Choose Your Trainer Sprite")
+        self.setWindowTitle(mw.translator.translate("trainer_sprite.window_title"))
         self.settings = settings_obj
         self.trainer_sprites = get_all_sprites(trainer_sprites_path)
         
@@ -17,7 +17,7 @@ class TrainerSpriteDialog(QDialog):
         layout = QVBoxLayout()
 
         # Label
-        label = QLabel("Choose your trainer sprite:")
+        label = QLabel(mw.translator.translate("trainer_sprite.choose_label"))
         layout.addWidget(label)
 
         # Image Preview (QLabel)
@@ -31,7 +31,7 @@ class TrainerSpriteDialog(QDialog):
         layout.addWidget(self.dropdown)
         
         # OK Button
-        ok_button = QPushButton("OK")
+        ok_button = QPushButton(mw.translator.translate("trainer_sprite.ok"))
         ok_button.clicked.connect(self.on_ok)
         layout.addWidget(ok_button)
 

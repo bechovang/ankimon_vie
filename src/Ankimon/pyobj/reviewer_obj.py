@@ -120,20 +120,21 @@ class Reviewer_Manager:
                         web_content.body += '<div id="life-bar" class="Ankimon"></div>'
                     if self.settings.get("gui.xp_bar_config", False) is True:
                         web_content.body += '<div id="xp-bar" class="Ankimon"></div>'
-                        web_content.body += '<div id="next_lvl_text" class="Ankimon">Next Level</div>'
-                        web_content.body += '<div id="xp_text" class="Ankimon">XP</div>'
+                        web_content.body += f'<div id="next_lvl_text" class="Ankimon">{mw.translator.translate("reviewer.next_level")}</div>'
+                        web_content.body += f'<div id="xp_text" class="Ankimon">{mw.translator.translate("reviewer.xp")}</div>'
                     # Inject a div element for the text display
                     enemy_lang_name = (get_pokemon_diff_lang_name(int(self.enemy_pokemon.id), int(self.settings.get('misc.language'))).capitalize())
                     if self.enemy_pokemon.shiny is True:
                         enemy_lang_name += " ⭐ "
-                    name_display_text = f"{enemy_lang_name} LvL: {self.enemy_pokemon.level}"
+                    name_display_text = mw.translator.translate("reviewer.name_display", name=enemy_lang_name, level=self.enemy_pokemon.level)
                     web_content.body += f'<div id="name-display" class="Ankimon">{name_display_text}</div>'
                     if self.enemy_pokemon.hp > 0:
                         web_content.body += f'{create_status_html(f"{self.enemy_pokemon.battle_status}", settings_obj=self.settings)}'
                     else:
                         web_content.body += f'{create_status_html("fainted", settings_obj=self.settings)}'
 
-                    web_content.body += f'<div id="hp-display" class="Ankimon">HP: {self.enemy_pokemon.hp}/{self.enemy_pokemon.max_hp}</div>'
+                    hp_display_text = mw.translator.translate("reviewer.hp_display", hp=self.enemy_pokemon.hp, max_hp=self.enemy_pokemon.max_hp)
+                    web_content.body += f'<div id="hp-display" class="Ankimon">{hp_display_text}</div>'
                     # Inject a div element at the end of the body for the life bar
                     image_base64 = get_image_as_base64(pokemon_image_file)
                     web_content.body += f'<div id="PokeImage" class="Ankimon"><img src="data:image/png;base64,{image_base64}" alt="PokeImage style="animation: shake 0s ease;"></div>'
@@ -143,9 +144,10 @@ class Reviewer_Manager:
                         main_lang_name = (get_pokemon_diff_lang_name(int(self.main_pokemon.id), int(self.settings.get('misc.language'))).capitalize())
                         if self.main_pokemon.shiny:
                             main_lang_name += " ⭐ "
-                        main_name_display_text = f"{main_lang_name} LvL: {self.main_pokemon.level}"
+                        main_name_display_text = mw.translator.translate("reviewer.name_display", name=main_lang_name, level=self.main_pokemon.level)
                         web_content.body += f'<div id="myname-display" class="Ankimon">{main_name_display_text}</div>'
-                        web_content.body += f'<div id="myhp-display" class="Ankimon">HP: {self.main_pokemon.hp}/{self.main_pokemon.max_hp}</div>'
+                        main_hp_display_text = mw.translator.translate("reviewer.hp_display", hp=self.main_pokemon.hp, max_hp=self.main_pokemon.max_hp)
+                        web_content.body += f'<div id="myhp-display" class="Ankimon">{main_hp_display_text}</div>'
                         # Inject a div element at the end of the body for the life bar
                         if self.settings.get("gui.hp_bar_config", True) is True:
                             web_content.body += '<div id="mylife-bar" class="Ankimon"></div>'
@@ -217,8 +219,8 @@ class Reviewer_Manager:
                 enemy_lang_name = (get_pokemon_diff_lang_name(int(self.enemy_pokemon.id), int(self.settings.get('misc.language'))).capitalize())
                 if self.enemy_pokemon.shiny is True:
                     enemy_lang_name += " ⭐ "
-                name_display_text = f"{enemy_lang_name} LvL: {self.enemy_pokemon.level}"
-                hp_display_text = f"HP: {self.enemy_pokemon.hp}/{self.enemy_pokemon.max_hp}"
+                name_display_text = mw.translator.translate("reviewer.name_display", name=enemy_lang_name, level=self.enemy_pokemon.level)
+                hp_display_text = mw.translator.translate("reviewer.hp_display", hp=self.enemy_pokemon.hp, max_hp=self.enemy_pokemon.max_hp)
                 reviewer.web.eval('document.getElementById("name-display").innerText = "' + name_display_text + '";')
                 reviewer.web.eval('document.getElementById("hp-display").innerText = "' + hp_display_text + '";')
                 
@@ -239,8 +241,8 @@ class Reviewer_Manager:
                     main_lang_name = (get_pokemon_diff_lang_name(int(self.main_pokemon.id), int(self.settings.get('misc.language'))).capitalize())
                     if self.main_pokemon.shiny:
                         main_lang_name += " ⭐ "
-                    main_name_display_text = f"{main_lang_name} LvL: {self.main_pokemon.level}"
-                    main_hp_display_text = f"HP: {self.main_pokemon.hp}/{self.main_pokemon.max_hp}"
+                    main_name_display_text = mw.translator.translate("reviewer.name_display", name=main_lang_name, level=self.main_pokemon.level)
+                    main_hp_display_text = mw.translator.translate("reviewer.hp_display", hp=self.main_pokemon.hp, max_hp=self.main_pokemon.max_hp)
                     reviewer.web.eval('document.getElementById("mylife-bar").style.width = "' + str(int((self.main_pokemon.hp / self.main_pokemon.max_hp) * 50)) + '%";')
                     reviewer.web.eval('document.getElementById("mylife-bar").style.background = "linear-gradient(to right, ' + str(myhp_color) + ', ' + str(myhp_color) + ' ' + '100' + '%, ' + 'rgba(54, 54, 56, 0.7)' + '100' + '%, ' + 'rgba(54, 54, 56, 0.7)' + ')";')
                     reviewer.web.eval('document.getElementById("mylife-bar").style.boxShadow = "0 0 10px ' + myhp_color + ', 0 0 30px rgba(54, 54, 56, 1)";')

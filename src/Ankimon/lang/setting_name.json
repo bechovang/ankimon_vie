@@ -39,6 +39,7 @@
     "misc.gen9": "Generation 9",
     "misc.remove_level_cap": "Remove Level Cap",
     "misc.language": "Language",
+    "misc.ui_language": "UI Language",
     "misc.ssh": "SSH Access",
     "misc.leaderboard": "Ankimon Leaderboard",
     "misc.YouShallNotPass_Ankimon_News": "Receive Ankimon News",

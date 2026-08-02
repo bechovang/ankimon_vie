@@ -22,6 +22,10 @@ class Settings:
         if "misc.leaderboard" not in config:
             config["misc.leaderboard"] = False  # Add the new setting with its default value
 
+        # Migrate older configs that predate the UI language setting
+        if "misc.ui_language" not in config:
+            config["misc.ui_language"] = "en"
+
         if not config:
             #Card max time in Seconds
             config = {

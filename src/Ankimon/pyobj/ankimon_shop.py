@@ -46,7 +46,7 @@ class PokemonShopManager:
         """Create and configure the Ankimon shop GUI."""
         # Create the dialog window with the Anki main window as its parent
         self.window = QDialog(parent=mw)
-        self.window.setWindowTitle("Ankimon Shop")
+        self.window.setWindowTitle(mw.translator.translate("shop.window_title"))
         self.window.setGeometry(100, 100, 1000, 400)  # Adjust window size as needed
 
         # Make the window behave like a tool window (not modal)
@@ -58,11 +58,11 @@ class PokemonShopManager:
         # --- Left Side for Daily Items ---
         daily_layout = QVBoxLayout()  # Vertical layout for daily items
         daily_layout_title_and_button = QHBoxLayout()
-        daily_label = QLabel("<h1>Daily Items</h1>")
+        daily_label = QLabel(f"<h1>{mw.translator.translate('shop.daily_items')}</h1>")
         daily_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        
+
         # Reroll button to reroll daily items
-        daily_items_reroll_button = QPushButton(f"Reroll daily items  ${self.daily_items_reroll_cost}")
+        daily_items_reroll_button = QPushButton(mw.translator.translate("shop.reroll_button", cost=self.daily_items_reroll_cost))
         daily_items_reroll_button.setFixedSize(180, 25)
         daily_items_reroll_button.clicked.connect(lambda: self.reroll_daily_items(cost=self.daily_items_reroll_cost))
         daily_layout_title_and_button.addWidget(daily_items_reroll_button, alignment=Qt.AlignmentFlag.AlignCenter)
@@ -113,7 +113,7 @@ class PokemonShopManager:
                 price_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
                 # Buy button
-                buy_button = QPushButton("Buy")
+                buy_button = QPushButton(mw.translator.translate("shop.buy"))
                 buy_button.clicked.connect(lambda checked, item=item: self.buy_item(item))
 
                 # Add widgets to the frame layout
@@ -130,7 +130,7 @@ class PokemonShopManager:
 
         # --- Right Side for Standard Items ---
         standard_layout = QVBoxLayout()  # Vertical layout for standard items
-        standard_label = QLabel("<h1>Standard Items</h1>")
+        standard_label = QLabel(f"<h1>{mw.translator.translate('shop.standard_items')}</h1>")
         standard_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         standard_layout.addWidget(standard_label)
 
@@ -196,7 +196,7 @@ class PokemonShopManager:
         main_layout.addLayout(standard_layout, stretch=1)  # Right side
 
         top_layout = QVBoxLayout()
-        self.currency_qlabel = QLabel(f"<h2>Current Cash: ${self.settings_obj.get('trainer.cash', 0)}</h2>")
+        self.currency_qlabel = QLabel(f"<h2>{mw.translator.translate('shop.current_cash', cash=self.settings_obj.get('trainer.cash', 0))}</h2>")
         top_layout.addWidget(self.currency_qlabel)
 
         # Create a vertical layout for the complete window
@@ -216,15 +216,15 @@ class PokemonShopManager:
         try:
             """Handle item purchase."""
             if self.settings_obj.get('trainer.cash', 0) < item['price']:
-                QMessageBox.critical(mw, "Purchase Failed", "You do not have enough cash to purchase this item.")
+                QMessageBox.critical(mw, mw.translator.translate("shop.purchase_failed"), mw.translator.translate("shop.not_enough_cash"))
                 return
             self.set_callback('trainer.cash', int(self.get_callback('trainer.cash', 0) - item['price']))
-            self.currency_qlabel.setText(f"<h2>Current Cash: ${self.settings_obj.get('trainer.cash', 0)}</h2>")
-            QMessageBox.information(mw, "Purchase Successful", f"You purchased {item.get('name', 'poke-ball').replace('-', ' ').capitalize()} for ${item['price']}! \n {self.get_callback('trainer.cash', 0)} cash remaining.")
+            self.currency_qlabel.setText(f"<h2>{mw.translator.translate('shop.current_cash', cash=self.settings_obj.get('trainer.cash', 0))}</h2>")
+            QMessageBox.information(mw, mw.translator.translate("shop.purchase_successful"), mw.translator.translate("shop.purchase_success_msg", item=item.get('name', 'poke-ball').replace('-', ' ').capitalize(), price=item['price'], cash=self.get_callback('trainer.cash', 0)))
             give_item(item['name'])
         except Exception as e:
             self.logger.log_and_showinfo("error", f"Failed to purchase item: {e}")
-            QMessageBox.critical(mw, "Purchase Failed", "An error occurred while purchasing the item.")
+            QMessageBox.critical(mw, mw.translator.translate("shop.purchase_failed"), mw.translator.translate("shop.purchase_error"))
 
     def reroll_daily_items(self, cost: int = 0) -> None:
         # BUG : Closing and reopening Anki will reset the shop to this day's shop, not to the latest reroll
@@ -239,12 +239,12 @@ class PokemonShopManager:
         """
         # First, we check if the user actually has enough money to pay for the reroll
         if self.settings_obj.get('trainer.cash', 0) < cost:
-            QMessageBox.critical(mw, "Purchase Failed", "You do not have enough money to reroll the shop.")
+            QMessageBox.critical(mw, mw.translator.translate("shop.purchase_failed"), mw.translator.translate("shop.not_enough_money_reroll"))
             return
         
         # We substract the cost of the reroll to the amount of money the user has
         self.set_callback('trainer.cash', int(self.get_callback('trainer.cash', 0) - cost))
-        self.currency_qlabel.setText(f"<h2>Current Cash: ${self.settings_obj.get('trainer.cash', 0)}</h2>")
+        self.currency_qlabel.setText(f"<h2>{mw.translator.translate('shop.current_cash', cash=self.settings_obj.get('trainer.cash', 0))}</h2>")
 
         # Rerolling the list of today's items
         random.seed()

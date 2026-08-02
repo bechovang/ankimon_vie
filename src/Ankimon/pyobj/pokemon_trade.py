@@ -35,14 +35,14 @@ class PokemonTrade:
             with open(self.mainpokemon_path, "r", encoding="utf-8") as file:
                 return json.load(file)
         except FileNotFoundError:
-            self.logger.log_and_showinfo("warning","Main Pokémon file not found!")
+            self.logger.log_and_showinfo("warning", mw.translator.translate("trade.main_file_not_found"))
             return []
 
     def check_and_trade(self):
         pokemon_data = self.load_pokemon_data()
         for pokemon in pokemon_data:
             if self._match_main_pokemon(pokemon):
-                self.logger.log_and_showinfo("warning","You can't trade your Main Pokémon! \nPlease pick a different Main Pokémon.")
+                self.logger.log_and_showinfo("warning", mw.translator.translate("trade.cant_trade_main"))
                 return
         self.open_trade_window()
 
@@ -60,14 +60,14 @@ class PokemonTrade:
 
     def open_trade_window(self):
         window = QDialog()
-        window.setWindowTitle(f"Trade Pokémon {self.name}")
+        window.setWindowTitle(mw.translator.translate("trade.window_title", name=self.name))
 
         # Trade Code Input Field
         trade_code_input = QLineEdit()
-        trade_code_input.setPlaceholderText("Enter Pokémon Code you want to trade for")
+        trade_code_input.setPlaceholderText(mw.translator.translate("trade.code_placeholder"))
 
         # Trade Button
-        trade_button = QPushButton("Trade Pokémon")
+        trade_button = QPushButton(mw.translator.translate("trade.trade_button"))
         trade_button.clicked.connect(lambda: self.trade_pokemon_in(trade_code_input.text()))
 
         # Generate Clipboard Content
@@ -76,7 +76,7 @@ class PokemonTrade:
 
         # Layout Setup
         layout = QVBoxLayout()
-        layout.addWidget(QLabel(f"{self.name} Code: {clipboard_info}"))
+        layout.addWidget(QLabel(mw.translator.translate("trade.code_info", name=self.name, info=clipboard_info)))
         layout.addWidget(trade_code_input)
         layout.addWidget(trade_button)
 
@@ -103,7 +103,7 @@ class PokemonTrade:
                 raise ValueError("Code is incomplete.")
             self.process_trade(numbers)
         except ValueError:
-            showWarning("Please enter a valid Pokémon Code!")
+            showWarning(mw.translator.translate("trade.invalid_code"))
 
     def process_trade(self, numbers):
         pokemon_id, level, gender_id = numbers[0], numbers[1], numbers[2]
@@ -172,7 +172,7 @@ class PokemonTrade:
             for details in pokedex.values():
                 if details.get('num') == pokemon_id:
                     return details
-        self.logger.log_and_showinfo("warning",f"No Pokémon found with ID: {pokemon_id}")
+        self.logger.log_and_showinfo("warning", mw.translator.translate("trade.not_found_by_id", id=pokemon_id))
         return None
 
     def gender_from_id(self, gender_id):
@@ -194,7 +194,7 @@ class PokemonTrade:
                         pokemon_list[idx] = new_pokemon
                         break
                 else:
-                    self.logger.log_and_showinfo("warning","Could not find the Pokémon with the specified Individual ID.")
+                    self.logger.log_and_showinfo("warning", mw.translator.translate("trade.not_found_individual"))
                     return
 
                 # Write updated Pokémon list back to the file
@@ -202,8 +202,8 @@ class PokemonTrade:
                 file.truncate()
                 json.dump(pokemon_list, file, indent=2)
             
-            self.logger.log_and_showinfo("warning",f"Successfully traded for {new_pokemon['name']}!")
+            self.logger.log_and_showinfo("warning", mw.translator.translate("trade.success", name=new_pokemon['name']))
             self.refresh_callback()
 
         except (FileNotFoundError, json.JSONDecodeError):
-            self.logger.log_and_showinfo("warning","Error updating Pokémon data.")
+            self.logger.log_and_showinfo("warning", mw.translator.translate("trade.error_updating"))

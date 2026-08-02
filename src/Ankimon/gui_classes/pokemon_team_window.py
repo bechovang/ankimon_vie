@@ -10,7 +10,7 @@ from ..resources import mypokemon_path, frontdefault, team_pokemon_path
 class PokemonTeamDialog(QDialog):
     def __init__(self, settings_obj, logger, parent=mw):
         super().__init__(parent)
-        self.setWindowTitle("Choose Your Pokémon Team (Max 6 Pokémon)")
+        self.setWindowTitle(mw.translator.translate("team.window_title"))
         self.settings = settings_obj
         self.logger = logger
         
@@ -26,7 +26,7 @@ class PokemonTeamDialog(QDialog):
         layout = QVBoxLayout()
         
         # Label
-        label = QLabel("Choose your Pokémon team (up to 6 Pokémon):")
+        label = QLabel(mw.translator.translate("team.choose_label"))
         layout.addWidget(label)
 
         # Team selection area (scrollable)
@@ -49,7 +49,7 @@ class PokemonTeamDialog(QDialog):
             pokemon_layout = QVBoxLayout()
             
             # Label for Pokémon name and level
-            pokemon_label = QLabel(f"Pokémon {i+1}: Not Selected")
+            pokemon_label = QLabel(mw.translator.translate("team.slot_not_selected", n=i + 1))
             pokemon_layout.addWidget(pokemon_label)
             
             # Add Pokémon sprite preview
@@ -57,12 +57,12 @@ class PokemonTeamDialog(QDialog):
             pokemon_layout.addWidget(sprite_label)
             
             # "Switch out Pokémon" button
-            switch_button = QPushButton(f"Switch out Pokémon {i+1}")
+            switch_button = QPushButton(mw.translator.translate("team.switch_out", n=i + 1))
             switch_button.clicked.connect(lambda _, i=i: self.switch_out_pokemon(i))
             pokemon_layout.addWidget(switch_button)
 
             # "Remove Pokémon" button
-            remove_button = QPushButton(f"Remove Pokémon {i+1}")
+            remove_button = QPushButton(mw.translator.translate("team.remove", n=i + 1))
             remove_button.clicked.connect(lambda _, i=i: self.remove_pokemon(i))
             pokemon_layout.addWidget(remove_button)
             
@@ -76,9 +76,9 @@ class PokemonTeamDialog(QDialog):
 
         # XP Share dropdown
         self.xp_share_combo = QComboBox()
-        self.xp_share_combo.addItem("No XP Share")
+        self.xp_share_combo.addItem(mw.translator.translate("team.no_xp_share"))
         for pokemon in self.my_pokemon:
-            self.xp_share_combo.addItem(f"{pokemon['name']} (Level {pokemon['level']})", pokemon['individual_id'])
+            self.xp_share_combo.addItem(mw.translator.translate("team.pokemon_with_level", name=pokemon['name'], level=pokemon['level']), pokemon['individual_id'])
         
         # Set the initial XP Share Pokémon (based on settings)
         xp_share_pokemon_individual_id = self.settings.get("trainer.xp_share", None)
@@ -86,11 +86,11 @@ class PokemonTeamDialog(QDialog):
             xp_share_index = next((i for i, p in enumerate(self.my_pokemon) if p['individual_id'] == xp_share_pokemon_individual_id), 0) + 1
             self.xp_share_combo.setCurrentIndex(xp_share_index)
         
-        layout.addWidget(QLabel("Choose Pokémon with XP Share:"))
+        layout.addWidget(QLabel(mw.translator.translate("team.xp_share")))
         layout.addWidget(self.xp_share_combo)
 
         # OK Button
-        ok_button = QPushButton("OK")
+        ok_button = QPushButton(mw.translator.translate("team.ok"))
         ok_button.clicked.connect(self.on_ok)
         layout.addWidget(ok_button)
         
@@ -145,7 +145,7 @@ class PokemonTeamDialog(QDialog):
                 sprite_path = os.path.join(frontdefault, f"{pokemon['id']}.png")
 
                 # Update label with name and level
-                frame_data['label'].setText(f"{pokemon_name} (Level {pokemon_level})")
+                frame_data['label'].setText(mw.translator.translate("team.pokemon_with_level", name=pokemon_name, level=pokemon_level))
 
                 # Display the sprite image
                 if os.path.exists(sprite_path):
@@ -155,7 +155,7 @@ class PokemonTeamDialog(QDialog):
                 else:
                     frame_data['sprite'].clear()
             else:
-                frame_data['label'].setText("Pokémon Not Selected")
+                frame_data['label'].setText(mw.translator.translate("team.not_selected"))
                 frame_data['sprite'].clear()  # Clear the sprite if not selected
                 
     def switch_out_pokemon(self, slot):
@@ -163,12 +163,12 @@ class PokemonTeamDialog(QDialog):
 
         # Create a dialog to choose a new Pokémon for the slot
         dialog = QDialog(self)
-        dialog.setWindowTitle("Select Pokémon to Switch In")
+        dialog.setWindowTitle(mw.translator.translate("team.switch_in"))
         dialog.setMinimumSize(300, 200)
 
         layout = QVBoxLayout()
 
-        label = QLabel("Choose a Pokémon to switch in:")
+        label = QLabel(mw.translator.translate("team.choose_switch_in"))
         layout.addWidget(label)
 
         # Create a dropdown to select a new Pokémon
@@ -181,7 +181,7 @@ class PokemonTeamDialog(QDialog):
 
         if available_pokemon:
             for pokemon in available_pokemon:
-                combo_box.addItem(f"{pokemon['name']} (Level {pokemon['level']})", pokemon)
+                combo_box.addItem(mw.translator.translate("team.pokemon_with_level", name=pokemon['name'], level=pokemon['level']), pokemon)
 
                 # Optionally, you can set a preview image as item data:
                 sprite_path = os.path.join(frontdefault, f"{pokemon['id']}.png")
@@ -189,12 +189,12 @@ class PokemonTeamDialog(QDialog):
                     pixmap = QPixmap(sprite_path)
                     combo_box.setItemData(combo_box.count() - 1, pixmap, Qt.ItemDataRole.DecorationRole)
         else:
-            combo_box.addItem("No available Pokémon", None)  # Display a message if no Pokémon are available
+            combo_box.addItem(mw.translator.translate("team.no_available"), None)  # Display a message if no Pokémon are available
 
         layout.addWidget(combo_box)
 
         # Label for the image preview
-        preview_label = QLabel("Preview:")
+        preview_label = QLabel(mw.translator.translate("team.preview"))
         layout.addWidget(preview_label)
         image_label = QLabel()
         layout.addWidget(image_label)
@@ -279,8 +279,7 @@ class PokemonTeamDialog(QDialog):
 
         if len(team_data) > 0:
             # Get the selected Pokémon for XP Share
-            xp_share_pokemon = self.xp_share_combo.currentText()
-            if xp_share_pokemon != "No XP Share":
+            if self.xp_share_combo.currentIndex() != 0:
                 # Retrieve the individual_id of the selected Pokémon
                 current_index = self.xp_share_combo.currentIndex()
                 xp_share_individual_id = self.xp_share_combo.itemData(current_index)
@@ -301,8 +300,8 @@ class PokemonTeamDialog(QDialog):
         
 
         if self.team_pokemon:
-            self.logger.log_and_showinfo("info", f"You chose the following team: {', '.join([pokemon['name'] for pokemon in pokemon_names])}")
+            self.logger.log_and_showinfo("info", mw.translator.translate("team.chosen_team", names=', '.join([pokemon['name'] for pokemon in pokemon_names])))
         else:
-            self.logger.log_and_showinfo("error", "No Pokémon team data found!")
+            self.logger.log_and_showinfo("error", mw.translator.translate("team.no_team_data"))
                 
         self.accept()  # Close the dialog

@@ -130,6 +130,10 @@ data_handler_window = DataHandlerWindow(
 # Create the Settings object
 settings_obj = Settings()
 
+#Init Translator (created before SettingsWindow so its UI text can be localized)
+translator = Translator(ui_language=settings_obj.get("misc.ui_language", "en"))
+mw.translator = translator
+
 # Pass the correct attributes to SettingsWindow
 settings_window = SettingsWindow(
     config=settings_obj.config,                 # Use settings_obj.config instead of settings_obj.settings.config
@@ -138,12 +142,8 @@ settings_window = SettingsWindow(
     load_config_callback=settings_obj.load_config
 )
 
-#Init Translator
-translator = Translator(language=int(settings_obj.get("misc.language", int(9))))
-
 mw.settings_ankimon = settings_window
 mw.logger = logger
-mw.translator = translator
 mw.settings_obj = settings_obj
 
 # Log an startup message
@@ -1125,7 +1125,7 @@ def save_main_pokemon_progress(mainpokemon_path, mainpokemon_level, mainpokemon_
     while int(find_experience_for_level(main_pokemon.growth_rate, main_pokemon.level, settings_obj.get("misc.remove_level_cap", False))) < int(main_pokemon.xp) and (level_cap is None or main_pokemon.level < level_cap):
         main_pokemon.level += 1
         msg = ""
-        msg += f"Your {main_pokemon.name} is now level {main_pokemon.level} !"
+        msg += translator.translate("main.mainpokemon_now_level", main_pokemon_name=main_pokemon.name, main_pokemon_level=main_pokemon.level)
         color = "#6A4DAC" #pokemon leveling info color for tooltip
         global achievements
         check = check_for_badge(achievements,5)
@@ -1179,12 +1179,12 @@ def save_main_pokemon_progress(mainpokemon_path, mainpokemon_level, mainpokemon_
                             if index_to_replace is not None:
                                 attacks[index_to_replace] = new_attack
                                 logger.log_and_showinfo("info",
-                                    f"Replaced '{selected_attack}' with '{new_attack}'")
+                                    translator.translate("replaced_attack", selected_attack=selected_attack, new_attack=new_attack))
                             else:
-                                logger.log_and_showinfo("info",f"'{selected_attack}' not found in the list")
+                                logger.log_and_showinfo("info", translator.translate("selected_attack_not_found", selected_attack=selected_attack))
                         else:
                             # Handle the case where the user cancels the dialog
-                            logger.log_and_showinfo("info",f"{new_attack} will be discarded.")
+                            logger.log_and_showinfo("info", translator.translate("details.attack_discarded", attack=new_attack))
                 mainpkmndata["attacks"] = attacks
                 break
     msg = ""
@@ -2116,7 +2116,7 @@ def save_fossil_pokemon(pokemon_id):
 def export_to_pkmn_showdown():
     # Create a main window
     window = QDialog(mw)
-    window.setWindowTitle("Export Pokemon to Pkmn Showdown")
+    window.setWindowTitle(translator.translate("main.export_to_showdown_title"))
     for stat, value in main_pokemon.ev.items():
         if value == 0:
             main_pokemon.ev[stat] += 1
@@ -2143,7 +2143,7 @@ def export_to_pkmn_showdown():
     for attack in main_pokemon.attacks:
         pokemon_info += f"\n- {attack}"
     # Information label
-    info = "Pokemon Infos have been Copied to your Clipboard! \nNow simply paste this text into Teambuilder in PokemonShowdown. \nNote: Fight in the [Gen 9] Anything Goes - Battle Mode"
+    info = translator.translate("collection.trade_info_copied")
     info += f"\n Your Pokemon is considered Tier: {search_pokedex(main_pokemon.name.lower(), 'tier')} in PokemonShowdown"
     # Create labels to display the text
     label = QLabel(pokemon_info)
@@ -2203,7 +2203,7 @@ def export_all_pkmn_showdown():
     #export_window.setWindowTitle("Export Pokemon to Pkmn Showdown")
 
     # Information label
-    info = "Pokemon Infos have been Copied to your Clipboard! \nNow simply paste this text into Teambuilder in PokemonShowdown. \nNote: Fight in the [Gen 7] Anything Goes - Battle Mode"
+    info = translator.translate("main.info_copied_gen7")
     info_label = QLabel(info)
 
     # Get all pokemon data
@@ -2294,7 +2294,7 @@ def flex_pokemon_collection():
     #export_window.setWindowTitle("Export Pokemon to Pkmn Showdown")
 
     # Information label
-    info = "Pokemon Infos have been Copied to your Clipboard! \nNow simply paste this text into https://pokepast.es/.\nAfter pasting the infos in your clipboard and submitting the needed infos on the right,\n you will receive a link to send friends to flex."
+    info = translator.translate("main.info_copied_pokepaste")
     info_label = QLabel(info)
 
 # Get all pokemon data
@@ -2408,7 +2408,7 @@ class TestWindow(QWidget):
         self.first_start = True
         self.setLayout(layout)
         # Set window
-        self.setWindowTitle('Ankimon Window')
+        self.setWindowTitle(translator.translate('main.ankimon_window_title'))
         self.setWindowIcon(QIcon(str(icon_path))) # Add a Pokeball icon
         # Display the Pokémon image
 
@@ -3020,16 +3020,16 @@ def rate_this_addon():
     # Check if rating is needed
     if not rate_this:
         rate_window = QDialog()
-        rate_window.setWindowTitle("Please Rate this Addon!")
+        rate_window.setWindowTitle(translator.translate("rate.window_title"))
         
         layout = QVBoxLayout(rate_window)
         
-        text_label = QLabel(rate_addon_text_label)
+        text_label = QLabel(translator.translate("rate.label"))
         layout.addWidget(text_label)
         
         # Rate button
-        rate_button = QPushButton("Rate Now")
-        dont_show_button = QPushButton("I dont want to rate this addon.")
+        rate_button = QPushButton(translator.translate("rate.now"))
+        dont_show_button = QPushButton(translator.translate("rate.dont_want"))
 
         def support_button_click():
             support_url = "https://ko-fi.com/unlucky99"
@@ -3037,12 +3037,12 @@ def rate_this_addon():
         
         def thankyou_message():
             thankyou_window = QDialog()
-            thankyou_window.setWindowTitle("Thank you !") 
+            thankyou_window.setWindowTitle(translator.translate("rate.thankyou_title"))
             thx_layout = QVBoxLayout(thankyou_window)
-            thx_label = QLabel(thankyou_message_text)
+            thx_label = QLabel(translator.translate("rate.thankyou_message"))
             thx_layout.addWidget(thx_label)
             # Support button
-            support_button = QPushButton("Support the Author")
+            support_button = QPushButton(translator.translate("rate.support"))
             support_button.clicked.connect(support_button_click)
             thx_layout.addWidget(support_button)
             thankyou_window.setModal(True)
@@ -3054,7 +3054,7 @@ def rate_this_addon():
             # Save the updated data back to the file
             with open(rate_path, 'w') as file:
                 json.dump(rate_data, file, indent=4)
-            logger.log_and_showinfo("info",dont_show_this_button_text)
+            logger.log_and_showinfo("info", translator.translate("rate.dont_show_message"))
 
         def rate_this_button():
             rate_window.close()
@@ -3140,7 +3140,7 @@ class StarterWindow(QWidget):
     def init_ui(self):
         basic_layout = QVBoxLayout()
         # Set window
-        self.setWindowTitle('Choose a Starter')
+        self.setWindowTitle(translator.translate('main.choose_starter_title'))
         self.setLayout(basic_layout)
         self.starter = False
 
@@ -3197,7 +3197,7 @@ class StarterWindow(QWidget):
         self.setMaximumHeight(340)
         self.show()
         self.starter = True
-        logger.log_and_showinfo("info","You have chosen your Starter Pokemon ! \n You can now close this window ! \n Please restart your Anki to restart your Pokemon Journey!")
+        logger.log_and_showinfo("info", translator.translate("main.chosen_starter"))
         global achievments
         check = check_for_badge(achievements,7)
         if check is False:
@@ -3215,7 +3215,7 @@ class StarterWindow(QWidget):
         self.setMaximumHeight(340)
         self.show()
         self.starter = True
-        logger.log_and_showinfo("info","You have received your Fossil Pokemon ! \n You can now close this window !")
+        logger.log_and_showinfo("info", translator.translate("main.received_fossil"))
         global achievments
         check = check_for_badge(achievements,19)
         if check is False:
@@ -3302,7 +3302,7 @@ class StarterWindow(QWidget):
 
         # custom font
         custom_font = load_custom_font(int(28), int(settings_obj.get("misc.language",11)))
-        message_box_text = "Choose your Starter Pokemon"
+        message_box_text = translator.translate("main.choose_starter_pokemon")
         # Draw the text on top of the image
         # Adjust the font size as needed
         painter.setFont(custom_font)
@@ -3310,7 +3310,7 @@ class StarterWindow(QWidget):
         painter.drawText(110, 310, message_box_text)
         custom_font = load_custom_font(int(20), int(settings_obj.get("misc.language",11)))
         painter.setFont(custom_font)
-        painter.drawText(10, 330, "Press G to change Generation")
+        painter.drawText(10, 330, translator.translate("main.press_g_change_generation"))
         painter.end()
         # Set the merged image as the pixmap for the QLabel
         starter_label = QLabel()
@@ -3406,7 +3406,7 @@ class EvoWindow(QWidget):
 
     def init_ui(self):
         basic_layout = QVBoxLayout()
-        self.setWindowTitle('Your Pokemon is about to Evolve')
+        self.setWindowTitle(translator.translate('main.pokemon_about_to_evolve_title'))
         self.setLayout(basic_layout)
 
     def open_dynamic_window(self):
@@ -3451,7 +3451,7 @@ class EvoWindow(QWidget):
 
         # custom font
         custom_font = load_custom_font(int(20), int(settings_obj.get("misc.language",11)))
-        message_box_text = f"{(prevo_name).capitalize()} has evolved to {(evo_name).capitalize()} !"
+        message_box_text = translator.translate("main.pokemon_has_evolved_to", prevo_name=prevo_name.capitalize(), evo_name=evo_name.capitalize())
         self.logger.log("game", message_box_text)
         # Draw the text on top of the image
         # Adjust the font size as needed
@@ -3532,16 +3532,16 @@ class EvoWindow(QWidget):
         pen = QPen()
         pen.setColor(QColor(255, 255, 255))
         painter.setPen(pen)
-        painter.drawText(150,35,f"{prevo_name.capitalize()} is evolving to {evo_name.capitalize()}")
-        painter.drawText(95,430,"Please Choose to Evolve Your Pokemon or Cancel Evolution")
+        painter.drawText(150,35, translator.translate("main.pokemon_is_evolving_to", prevo_name=prevo_name.capitalize(), evo_name=evo_name.capitalize()))
+        painter.drawText(95,430, translator.translate("main.choose_evolve_or_cancel"))
         # Capitalize the first letter of the Pokémon's name
         #name_label = QLabel(capitalized_name)
         painter.end()
         # Capitalize the first letter of the Pokémon's name
 
         # Create buttons for catching and killing the Pokémon
-        evolve_button = QPushButton("Evolve Pokémon")
-        dont_evolve_button = QPushButton("Cancel Evolution")
+        evolve_button = QPushButton(translator.translate("main.evolve_pokemon_button"))
+        dont_evolve_button = QPushButton(translator.translate("main.cancel_evolution"))
         qconnect(evolve_button.clicked, lambda: evolve_pokemon(individual_id, prevo_name, evo_id, evo_name))
         qconnect(dont_evolve_button.clicked, lambda: cancel_evolution(individual_id, prevo_id))
 
@@ -3648,14 +3648,14 @@ class ItemWindow(QWidget):
         self.tm_hm_list = {}
 
         self.setWindowIcon(QIcon(str(icon_path)))  # Add a Pokeball icon
-        self.setWindowTitle("Itembag")
+        self.setWindowTitle(translator.translate("itembag_button"))
         self.layout = QVBoxLayout()  # Main layout is now a QVBoxLayout
 
         # Search Filter
         self.search_edit = QLineEdit()
-        self.search_edit.setPlaceholderText("Search Items...")
+        self.search_edit.setPlaceholderText(translator.translate("main.search_items_placeholder"))
         self.search_edit.returnPressed.connect(self.filter_items)
-        self.search_button = QPushButton("Search")
+        self.search_button = QPushButton(translator.translate("collection.search"))
         self.search_button.clicked.connect(self.filter_items)
 
         # Add dropdown menu for generation filtering
@@ -3699,7 +3699,7 @@ class ItemWindow(QWidget):
         max_items_per_row = 3
 
         if not self.itembag_list:  # Simplified check
-            empty_label = QLabel("You don't own any items yet.")
+            empty_label = QLabel(translator.translate("main.no_items_yet"))
             self.contentLayout.addWidget(empty_label, 1, 1)
         else:
             for item in self.itembag_list:
@@ -3724,7 +3724,7 @@ class ItemWindow(QWidget):
 
         try:
             if not self.itembag_list:  # Simplified check
-                empty_label = QLabel("Empty Search")
+                empty_label = QLabel(translator.translate("main.empty_search"))
                 self.contentLayout.addWidget(empty_label, 1, 1)
             else:
                 # Filter items based on category index
@@ -3770,7 +3770,7 @@ class ItemWindow(QWidget):
     def ItemLabel(self, item_name, quantity):
         item_file_path = items_path / f"{item_name}.png"
         item_frame = QVBoxLayout()  # itemframe
-        info_item_button = QPushButton("More Info")
+        info_item_button = QPushButton(translator.translate("main.more_info"))
         info_item_button.clicked.connect(lambda: self.more_info_button_act(item_name))
         item_name_for_label = item_name.replace("-", " ")  # Remove hyphens from item_name
         item_name_label = QLabel(f"{item_name_for_label.capitalize()} x{quantity}")  # Display quantity
@@ -3784,19 +3784,19 @@ class ItemWindow(QWidget):
 
         item_name = item_name.lower()
         if item_name in self.hp_heal_items:
-            use_item_button = QPushButton("Heal Mainpokemon")
+            use_item_button = QPushButton(translator.translate("main.heal_mainpokemon"))
             hp_heal = self.hp_heal_items[item_name]
             use_item_button.clicked.connect(lambda: self.Check_Heal_Item(self.main_pokemon.name, hp_heal, item_name))
         elif item_name in self.fossil_pokemon:
             fossil_id = self.fossil_pokemon[item_name]
             fossil_pokemon_name = search_pokedex_by_id(fossil_id)
-            use_item_button = QPushButton(f"Evolve Fossil to {fossil_pokemon_name.capitalize()}")
+            use_item_button = QPushButton(translator.translate("main.evolve_fossil_to", fossil_pokemon_name=fossil_pokemon_name.capitalize()))
             use_item_button.clicked.connect(lambda: self.Evolve_Fossil(item_name, fossil_id, fossil_pokemon_name))
         elif item_name in self.pokeball_chances:
-            use_item_button = QPushButton("Try catching wild Pokemon")
+            use_item_button = QPushButton(translator.translate("main.try_catching_wild"))
             use_item_button.clicked.connect(lambda: self.Handle_Pokeball(item_name))
         else:
-            use_item_button = QPushButton("Evolve Pokemon")
+            use_item_button = QPushButton(translator.translate("main.evolve_pokemon_button"))
             use_item_button.clicked.connect(
                 lambda: self.Check_Evo_Item(comboBox.itemData(comboBox.currentIndex(), role=UserRole), comboBox.itemData(comboBox.currentIndex(), role=UserRole + 1), item_name)
             )
@@ -4017,7 +4017,7 @@ class AchievementWindow(QWidget):
 
     def initUI(self):
         self.setWindowIcon(QIcon(str(icon_path)))
-        self.setWindowTitle("Achievements")
+        self.setWindowTitle(translator.translate("achievements_button"))
         self.layout = QVBoxLayout()  # Main layout is now a QVBoxLayout
 
         # Create the scroll area and its properties
@@ -4046,7 +4046,7 @@ class AchievementWindow(QWidget):
         row, col = 0, 0
         max_items_per_row = 4
         if self.badge_list is None or not self.badge_list:  # Wenn None oder leer
-            empty_label = QLabel("You dont own any badges yet.")
+            empty_label = QLabel(translator.translate("main.no_badges_yet"))
             self.contentLayout.addWidget(empty_label, 1, 1)
         else:
             for badge_num in self.badge_list:
@@ -4212,13 +4212,13 @@ addHook("profileLoaded", on_profile_loaded)
 
 def catch_shorcut_function():
     if enemy_pokemon.hp > 1:
-        tooltip("You only catch a pokemon once its fained !")
+        tooltip(translator.translate("main.catch_once_fainted"))
     else:
         catch_pokemon("")
 
 def defeat_shortcut_function():
     if enemy_pokemon.hp > 1:
-        tooltip("Wild pokemon has to be fainted to defeat it !")
+        tooltip(translator.translate("main.wild_fainted_to_defeat"))
     else:
         kill_pokemon()
         new_pokemon()
@@ -4239,7 +4239,7 @@ if reviewer_buttons is True:
     Review_linkHandelr_Original = Reviewer._linkHandler
     # Define the HTML and styling for the custom button
     def custom_button():
-        return f"""<button title="Shortcut key: C" onclick="pycmd('catch');" {button_style}>Catch</button>"""
+        return f"""<button title="Shortcut key: C" onclick="pycmd('catch');" {button_style}>{translator.translate("main.catch_button_short")}</button>"""
 
     # Update the link handler function to handle the custom button action
     def linkHandler_wrap(reviewer, url):
@@ -4260,6 +4260,8 @@ if reviewer_buttons is True:
             time=self.card.time_taken() // 1000,
             CatchKey=tr.actions_shortcut_key(val=f"{catch_shortcut}"),
             DefeatKey=tr.actions_shortcut_key(val=f"{defeat_shortcut}"),
+            catch_btn=translator.translate("catch_button"),
+            defeat_btn=translator.translate("defeat_button"),
         )
 
     # Replace the current HTML with the updated HTML

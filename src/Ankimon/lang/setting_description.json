@@ -37,6 +37,7 @@
     "misc.gen9": "Enable Pokémon from Generation 9. Set true to include these.",
     "misc.remove_level_cap": "Allow leveling beyond set level cap.",
     "misc.language": "Select language ID for Pokémon names and descriptions. [1: Japanese (Hir & Kata), 2: Japanese (Roomaji), 3: Korean, 4: Chinese, 5: Frensh, 6: German, 7: Spanish, 8: Italian, 9: English, 10: Czech, 11: Japanese, 12: Chinese, 13: Portuguese (Brazil)]",
+    "misc.ui_language": "Select the interface language for menus, buttons and messages. [en: English, vi: Tiếng Việt]. Note: Pokémon species names/descriptions still follow the 'Language' setting above. Requires an Anki restart to take effect.",
     "misc.ssh": "Enable SSH if encountering connectivity issues (like Eduroam restrictions).",
     "misc.leaderboard": "Enable synchronization with Ankimon leaderboard (leaderboard.ankimon.com). \nTo set up, check Ankimon -> Game -> Ankimon Leaderboard and Ankimon -> Ankimon Leaderboard Credentials.",
     "misc.YouShallNotPass_Ankimon_News": "Prevent news pop-ups on Ankimon startup by setting this to true.",

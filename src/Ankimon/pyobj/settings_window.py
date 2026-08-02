@@ -1,7 +1,7 @@
 import json
 import os
 from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton
-from PyQt6.QtWidgets import QRadioButton, QHBoxLayout, QMainWindow, QScrollArea, QButtonGroup
+from PyQt6.QtWidgets import QRadioButton, QHBoxLayout, QMainWindow, QScrollArea, QButtonGroup, QComboBox
 from PyQt6.QtWidgets import QMessageBox
 from aqt.utils import showWarning, showInfo
 from aqt import mw
@@ -14,7 +14,7 @@ class SettingsWindow(QMainWindow):
         self.set_config_callback = set_config_callback
         self.save_config_callback = save_config_callback
         self.load_config = load_config_callback
-        self.setWindowTitle("Settings")
+        self.setWindowTitle(mw.translator.translate("settings.window_title"))
         self.setMaximumWidth(600)
         self.setMaximumHeight(900)
         self.parent = mw
@@ -35,10 +35,12 @@ class SettingsWindow(QMainWindow):
         self.set_config_callback(key, value)
 
     def load_descriptions(self):
+        ui_lang = self.config.get("misc.ui_language", "en")
+        fname = "setting_description_vi.json" if ui_lang == "vi" else "setting_description.json"
         descriptions_file = os.path.join(
             os.path.dirname(os.path.dirname(__file__)),
             'lang',
-            'setting_description.json'
+            fname
         )
         if os.path.exists(descriptions_file):
             try:
@@ -55,7 +57,9 @@ class SettingsWindow(QMainWindow):
         
     def load_friendly_names(self):
         # Load the friendly names from a JSON file one level above the root of the add-on directory
-        names_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'lang', 'setting_name.json')
+        ui_lang = self.config.get("misc.ui_language", "en")
+        fname = "setting_name_vi.json" if ui_lang == "vi" else "setting_name.json"
+        names_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'lang', fname)
         if os.path.exists(names_file):
             with open(names_file, "r", encoding="utf-8") as f:
                 return json.load(f)
@@ -70,6 +74,21 @@ class SettingsWindow(QMainWindow):
         self.setCentralWidget(central_widget)
         layout = QVBoxLayout(central_widget)
 
+        # UI language selector (rendered as a dropdown at the top)
+        ui_lang_label = QLabel(self.friendly_names.get("misc.ui_language", "UI Language"))
+        self.ui_lang_combo = QComboBox()
+        self.ui_lang_combo.addItem("English", "en")
+        self.ui_lang_combo.addItem("Tiếng Việt", "vi")
+        current_ui_lang = self.config.get("misc.ui_language", "en")
+        combo_idx = self.ui_lang_combo.findData(current_ui_lang)
+        if combo_idx >= 0:
+            self.ui_lang_combo.setCurrentIndex(combo_idx)
+        self.ui_lang_combo.currentIndexChanged.connect(
+            lambda i: self.update_config("misc.ui_language", self.ui_lang_combo.itemData(i))
+        )
+        layout.addWidget(ui_lang_label)
+        layout.addWidget(self.ui_lang_combo)
+
         # Scroll area to hold settings
         scroll_area = QScrollArea()
         scroll_area.setWidgetResizable(True)
@@ -80,7 +99,7 @@ class SettingsWindow(QMainWindow):
         # Track label-based settings
         self.label_settings = {}
 
-        keys_to_skip = {"debug_mode", "deprecated_setting", "trainer.cash", "trainer.xp", "trainer.id", "trainer.sprite"}
+        keys_to_skip = {"debug_mode", "deprecated_setting", "trainer.cash", "trainer.xp", "trainer.id", "trainer.sprite", "misc.ui_language"}
 
         # Handle different setting types
         for key, value in self.config.items():
@@ -91,7 +110,7 @@ class SettingsWindow(QMainWindow):
 
             if isinstance(value, bool):
                 label = QLabel(friendly_name)
-                description_label = QLabel(self.descriptions.get(key, "No description available."))
+                description_label = QLabel(self.descriptions.get(key, mw.translator.translate("settings.no_description")))
                 
                 # Enable word wrap and set maximum width for the description label
                 description_label.setWordWrap(True)
@@ -99,8 +118,8 @@ class SettingsWindow(QMainWindow):
                 description_label.setContentsMargins(5, 5, 5, 0)  # 5 padding around
 
                 # Create radio buttons and unique button group for each setting
-                true_radio = QRadioButton("True")
-                false_radio = QRadioButton("False")
+                true_radio = QRadioButton(mw.translator.translate("settings.true"))
+                false_radio = QRadioButton(mw.translator.translate("settings.false"))
                 true_radio.setChecked(value)
                 false_radio.setChecked(not value)
 
@@ -124,7 +143,7 @@ class SettingsWindow(QMainWindow):
 
             elif isinstance(value, int) or isinstance(value, str):
                 label = QLabel(friendly_name)
-                description_label = QLabel(self.descriptions.get(key, "No description available."))
+                description_label = QLabel(self.descriptions.get(key, mw.translator.translate("settings.no_description")))
 
                 # Enable word wrap and set maximum width for the description label
                 description_label.setWordWrap(True)
@@ -144,8 +163,8 @@ class SettingsWindow(QMainWindow):
         layout.addWidget(scroll_area)
 
         # Save button
-        save_button = QPushButton("Save")
-        save_button.setToolTip("Click to save your settings.")
+        save_button = QPushButton(mw.translator.translate("settings.save"))
+        save_button.setToolTip(mw.translator.translate("settings.save_tooltip"))
         save_button.clicked.connect(self.on_save)
         layout.addWidget(save_button)
 
@@ -176,7 +195,7 @@ class SettingsWindow(QMainWindow):
         # Display only the changed settings
         if changed_settings:
             changed_message = "\n".join([f"{key}: {value}" for key, value in changed_settings.items()])
-            QMessageBox.information(self, "Settings Saved", "Your settings have been saved successfully.")
-            QMessageBox.information(self, "Config changes", f"Changed settings:\n{changed_message}")
+            QMessageBox.information(self, mw.translator.translate("settings.saved_title"), mw.translator.translate("settings.saved_msg"))
+            QMessageBox.information(self, mw.translator.translate("settings.config_changes_title"), mw.translator.translate("settings.config_changes_msg", changes=changed_message))
         else:
-            QMessageBox.information(self, "No Changes", "No settings were changed.")
+            QMessageBox.information(self, mw.translator.translate("settings.no_changes_title"), mw.translator.translate("settings.no_changes_msg"))

@@ -24,6 +24,24 @@ from aqt.utils import showWarning
 import json
 from ..resources import mainpokemon_path, mypokemon_path
 
+
+def _t(key, **kwargs):
+    """Shortcut helper for the addon translator (mw.translator)."""
+    return mw.translator.translate(key, **kwargs)
+
+
+def _translate_attack_headers(html):
+    """Translate the shared attack-table header cells (Name/Type/.../Description)."""
+    return (html
+            .replace("<th>Name</th>", f"<th>{_t('attack.name')}</th>")
+            .replace("<th>Type</th>", f"<th>{_t('attack.type')}</th>")
+            .replace("<th>Category</th>", f"<th>{_t('attack.category')}</th>")
+            .replace("<th>Power</th>", f"<th>{_t('attack.power')}</th>")
+            .replace("<th>Accuracy</th>", f"<th>{_t('attack.accuracy')}</th>")
+            .replace("<th>PP</th>", f"<th>{_t('attack.pp')}</th>")
+            .replace("<th>Description</th>", f"<th>{_t('attack.description')}</th>"))
+
+
 def PokemonCollectionDetails(name, level, id, shiny, ability, type, detail_stats, attacks, base_experience, growth_rate, ev, iv, gender, nickname, individual_id, pokemon_defeated, everstone, captured_date, language, gif_in_collection, remove_levelcap, logger, refresh_callback):
     # Create the dialog
     try:
@@ -32,9 +50,9 @@ def PokemonCollectionDetails(name, level, id, shiny, ability, type, detail_stats
         description = lang_desc
         wpkmn_details = QDialog(mw)
         if nickname is None:
-            wpkmn_details.setWindowTitle(f"Infos to : {lang_name} ")
+            wpkmn_details.setWindowTitle(_t("details.infos_to_name", name=lang_name))
         else:
-            wpkmn_details.setWindowTitle(f"Infos to : {nickname} ({lang_name}) ")
+            wpkmn_details.setWindowTitle(_t("details.infos_to_nickname", nickname=nickname, name=lang_name))
 
         wpkmn_details.setFixedWidth(500)
         wpkmn_details.setMaximumHeight(400)
@@ -70,7 +88,7 @@ def PokemonCollectionDetails(name, level, id, shiny, ability, type, detail_stats
             pkmntype_label2 = QLabel()
             pkmntypepixmap2 = QPixmap()
             pkmntypepixmap2.load(str(typeimage_path2))
-        
+
 
         # Create a painter to add text on top of the image
         painter2 = QPainter(pkmnpixmap)
@@ -96,11 +114,11 @@ def PokemonCollectionDetails(name, level, id, shiny, ability, type, detail_stats
         else:
             result = list(split_string_by_length(description, 55))
         description_formated = '\n'.join(result)
-        description_txt = f"Description: \n {description_formated}"
-        growth_rate_txt = (f"Growth Rate: {growth_rate.capitalize()}")
-        lvl = (f" Level: {level}")
-        ability_txt = (f" Ability: {ability.capitalize()}")
-        type_txt = (f" Type:")
+        description_txt = _t("details.description", description=description_formated)
+        growth_rate_txt = _t("details.growth_rate", growth_rate=growth_rate.capitalize())
+        lvl = _t("details.level_value", level=level)
+        ability_txt = _t("details.ability", ability=ability.capitalize())
+        type_txt = _t("details.type")
         stats_list = [
             detail_stats["hp"],
             detail_stats["atk"],
@@ -110,15 +128,17 @@ def PokemonCollectionDetails(name, level, id, shiny, ability, type, detail_stats
             detail_stats["spe"],
             detail_stats["xp"]
         ]
-        stats_txt = f"Stats:\n\
-            Hp: {stats_list[0]}\n\
-            Attack: {stats_list[1]}\n\
-            Defense: {stats_list[2]}\n\
-            Special-attack: {stats_list[3]}\n\
-            Special-defense: {stats_list[4]}\n\
-            Speed: {stats_list[5]}\n\
-            XP: {stats_list[6]}"
-        attacks_txt = "Moves:"
+        stats_txt = _t(
+            "details.stats",
+            hp=stats_list[0],
+            attack=stats_list[1],
+            defense=stats_list[2],
+            special_attack=stats_list[3],
+            special_defense=stats_list[4],
+            speed=stats_list[5],
+            xp=stats_list[6],
+        )
+        attacks_txt = _t("details.moves")
         for attack in attacks:
             attacks_txt += f"\n{attack.capitalize()}"
 
@@ -149,11 +169,11 @@ def PokemonCollectionDetails(name, level, id, shiny, ability, type, detail_stats
         description_label = QLabel(description_txt)
         level_label = QLabel(lvl)
         growth_rate_label = QLabel(growth_rate_txt)
-        base_exp_label = QLabel(f"Base XP: {base_experience}")
+        base_exp_label = QLabel(_t("details.base_xp", base_experience=base_experience))
         # Align to the center
         level_label.setFont(font)
         base_exp_label.setFont(font)
-        type_label= QLabel("Type:")
+        type_label= QLabel(_t("details.type_label"))
         type_label.setFont(font)
         # Create a QLabel for the level
         ability_label = QLabel(ability_txt)
@@ -199,11 +219,11 @@ def PokemonCollectionDetails(name, level, id, shiny, ability, type, detail_stats
         TopFirstLayout.setLayout(first_layout)
         layout.addWidget(name_label)
         layout.addWidget(TopFirstLayout)
-        pokemon_defeated_label = QLabel(f"Pokemon Defeated: {pokemon_defeated}")
+        pokemon_defeated_label = QLabel(_t("details.pokemon_defeated", count=pokemon_defeated))
         pokemon_defeated_label.setFont(load_custom_font(int(15), language))
-        everstone_label = QLabel(f"Everstone: {everstone}")
+        everstone_label = QLabel(_t("details.everstone", everstone=everstone))
         everstone_label.setFont(load_custom_font(int(15), language))
-        captured_date_label = QLabel(f"Captured: {captured_date}")
+        captured_date_label = QLabel(_t("details.captured", captured_date=captured_date))
         captured_date_label.setFont(load_custom_font(int(15), language))
         #new values added to details window
         layout.addWidget(description_label)
@@ -224,12 +244,12 @@ def PokemonCollectionDetails(name, level, id, shiny, ability, type, detail_stats
         TopL_layout_Box.addWidget(typelayout_widget)
         TopL_layout_Box.addWidget(ability_label)
         #attackslayout.addWidget(attacks_label)
-        attacks_details_button = QPushButton("Attack Details") #add Details to Moves
+        attacks_details_button = QPushButton(_t("details.attack_details")) #add Details to Moves
         qconnect(attacks_details_button.clicked, lambda: attack_details_window(attacks))
-        remember_attacks_details_button = QPushButton("Remember Attacks") #add Details to Moves
+        remember_attacks_details_button = QPushButton(_t("details.remember_attacks")) #add Details to Moves
         all_attacks = get_all_pokemon_moves(name, level)
         qconnect(remember_attacks_details_button.clicked, lambda: remember_attack_details_window(id, attacks, all_attacks, logger))
-        forget_attacks_details_button = QPushButton("Forget Attacks") 
+        forget_attacks_details_button = QPushButton(_t("details.forget_attacks"))
         qconnect(forget_attacks_details_button.clicked, lambda: forget_attack_details_window(id, attacks, logger))
         #free_pokemon_button = QPushButton("Release Pokemon") #add Details to Moves unneeded button
         attacks_label.setFixedHeight(150)
@@ -250,15 +270,15 @@ def PokemonCollectionDetails(name, level, id, shiny, ability, type, detail_stats
         statstablelayout.setStyleSheet("border: 2px solid white; padding: 5px;")
         #statstablelayout.setFixedWidth(350)
         statstablelayout.setFixedHeight(200)
-        free_pokemon_button = QPushButton("Release Pokemon") #add Details to Moves
+        free_pokemon_button = QPushButton(_t("details.release_pokemon")) #add Details to Moves
         qconnect(free_pokemon_button.clicked, lambda: PokemonFree(individual_id, name, logger, refresh_callback))
-        trade_pokemon_button = QPushButton("Trade Pokemon") #add Details to Moves
+        trade_pokemon_button = QPushButton(_t("details.trade_pokemon")) #add Details to Moves
         qconnect(trade_pokemon_button.clicked, lambda: PokemonTrade(name, id, level, ability, iv, ev, gender, attacks, individual_id, logger, refresh_callback))
         layout.addWidget(trade_pokemon_button)
         layout.addWidget(free_pokemon_button)
-        rename_button = QPushButton("Rename Pokemon") #add Details to Moves
+        rename_button = QPushButton(_t("details.rename_pokemon")) #add Details to Moves
         rename_input = QLineEdit()
-        rename_input.setPlaceholderText("Enter a new Nickname for your Pokemon")
+        rename_input.setPlaceholderText(_t("details.rename_placeholder"))
         qconnect(rename_button.clicked, lambda: rename_pkmn(rename_input.text(),name, individual_id, logger, refresh_callback))
         layout.addWidget(rename_input)
         layout.addWidget(rename_button)
@@ -291,7 +311,7 @@ def PokemonCollectionDetails(name, level, id, shiny, ability, type, detail_stats
         # Show the dialog
         wpkmn_details.exec()
     except Exception as e:
-        showWarning(f"Error occured in Pokemon Details Button: {e}")
+        showWarning(_t("details.error_pokemon_details", error=e))
 
 
 def PokemonDetailsStats(detail_stats, growth_rate, level, remove_levelcap, language):
@@ -352,11 +372,11 @@ def PokemonDetailsStats(detail_stats, growth_rate, level, remove_levelcap, langu
 def createStatBar(color, value):
     pixmap = QPixmap(200, 10)
     pixmap.fill(QColor(0, 0, 0, 0))  # RGBA where A (alpha) is 0 for full transparency
-    
+
     # Default to gray if color is None
     if color is None:
         color = QColor(128, 128, 128)  # Gray
-    
+
     painter = QPainter(pixmap)
 
     # Draw bar in the background
@@ -377,7 +397,7 @@ def attack_details_window(attacks):
     window.setWindowIcon(QIcon(str(icon_path)))
     layout = QVBoxLayout()
     # HTML content
-    html_content = attack_details_window_template
+    html_content = _translate_attack_headers(attack_details_window_template)
     # Loop through the list of attacks and add them to the HTML content
     for attack in attacks:
         move = find_details_move(attack)
@@ -386,7 +406,7 @@ def attack_details_window(attacks):
             try:
                 move = find_details_move(attack)
             except:
-                logger.log_and_showinfo("info",f"Can't find the attack {attack} in the database.")
+                logger.log_and_showinfo("info", _t("details.attack_not_found_db", attack=attack))
                 move = find_details_move("tackle")
         html_content += f"""
         <tr>
@@ -415,7 +435,7 @@ def remember_attack_details_window(id, attack_set, all_attacks, logger):
     window = QDialog()
     window.setWindowIcon(QIcon(str(icon_path)))
     layout = QHBoxLayout()
-    window.setWindowTitle("Remember Attacks")  # Optional: Set a window title
+    window.setWindowTitle(_t("details.remember_attacks"))  # Optional: Set a window title
     # Outer layout contains everything
     outer_layout = QVBoxLayout(window)
 
@@ -428,7 +448,7 @@ def remember_attack_details_window(id, attack_set, all_attacks, logger):
     layout = QHBoxLayout(content_widget)  # The main layout is now set on this widget
 
     # HTML content
-    html_content = remember_attack_details_window_template
+    html_content = _translate_attack_headers(remember_attack_details_window_template)
     # Loop through the list of attacks and add them to the HTML content
     for attack in all_attacks:
         move = find_details_move(attack)
@@ -454,7 +474,7 @@ def remember_attack_details_window(id, attack_set, all_attacks, logger):
     attack_layout = QVBoxLayout()
     for attack in all_attacks:
         move = find_details_move(attack)
-        remember_attack_button = QPushButton(f"Remember {attack}") #add Details to Moves
+        remember_attack_button = QPushButton(_t("details.remember_attack", attack=attack)) #add Details to Moves
         remember_attack_button.clicked.connect(lambda checked, a=attack: remember_attack(id, attack_set, a, logger))
         attack_layout.addWidget(remember_attack_button)
     attack_layout_widget = QWidget()
@@ -475,10 +495,10 @@ def remember_attack_details_window(id, attack_set, all_attacks, logger):
 
 def remember_attack(id, attacks, new_attack, logger):
     if new_attack in attacks:
-        logger.log_and_showinfo("warning","Your pokemon already knows this move!")
+        logger.log_and_showinfo("warning", _t("details.already_knows_move"))
         return
     if not mainpokemon_path.is_file():
-        logger.log_and_showinfo("warning","Missing Mainpokemon Data !")
+        logger.log_and_showinfo("warning", _t("missing_mainpokemon_data"))
         return
     with open(mainpokemon_path, "r", encoding="utf-8") as json_file:
         main_pokemon_data = json.load(json_file)
@@ -488,11 +508,11 @@ def remember_attack(id, attacks, new_attack, logger):
             attacks = mainpkmndata["attacks"]
             if new_attack:
                 msg = ""
-                msg += f"Your {mainpkmndata['name'].capitalize()} can learn a new attack !"
+                msg += _t("mainpokemon_can_learn_new_attack", main_pokemon_name=mainpkmndata['name'].capitalize())
                 if len(attacks) < 4:
                         attacks.append(new_attack)
-                        msg += f"\n Your {mainpkmndata['name'].capitalize()} has learned {new_attack} !"
-                        logger.log_and_showinfo("info",f"{msg}")
+                        msg += "\n " + _t("mainpokemon_learned_new_attack", main_pokemon_name=mainpkmndata['name'].capitalize(), new_attack_name=new_attack)
+                        logger.log_and_showinfo("info", f"{msg}")
                 else:
                         dialog = AttackDialog(attacks, new_attack)
                         if dialog.exec() == QDialog.DialogCode.Accepted:
@@ -507,17 +527,17 @@ def remember_attack(id, attacks, new_attack, logger):
                             # If the attack is found, replace it with 'new_attack'
                             if index_to_replace is not None:
                                 attacks[index_to_replace] = new_attack
-                                logger.log_and_showinfo("info",f"Replaced '{selected_attack}' with '{new_attack}'")
+                                logger.log_and_showinfo("info", _t("replaced_attack", selected_attack=selected_attack, new_attack=new_attack))
                             else:
                                 # Handle the case where the user cancels the dialog
-                                logger.log_and_showinfo("info",f"{new_attack} will be discarded.")
+                                logger.log_and_showinfo("info", _t("details.attack_discarded", attack=new_attack))
             mainpkmndata["attacks"] = attacks
             mypkmndata = mainpkmndata
             mainpkmndata = [mainpkmndata]
             # Save the caught Pokémon's data to a JSON file
             with open(str(mainpokemon_path), "w") as json_file:
                 json.dump(mainpkmndata, json_file, indent=2)
-            
+
             with open(str(mypokemon_path), "r", encoding="utf-8") as output_file:
                 mypokemondata = json.load(output_file)
 
@@ -530,7 +550,7 @@ def remember_attack(id, attacks, new_attack, logger):
             with open(str(mypokemon_path), "w") as output_file:
                 json.dump(mypokemondata, output_file, indent=2)
         else:
-            logger.log_and_showinfo("info","Please Select this Pokemon first as Main Pokemon ! \n Only Mainpokemons can re-learn attacks!")
+            logger.log_and_showinfo("info", _t("details.select_as_main_remember"))
 
 def forget_attack_details_window(id: int, attack_set: list[str], logger: "InfoLogger.ShowInfoLogger") -> None:
     """
@@ -545,7 +565,7 @@ def forget_attack_details_window(id: int, attack_set: list[str], logger: "InfoLo
     window = QDialog()
     window.setWindowIcon(QIcon(str(icon_path)))
     layout = QHBoxLayout()
-    window.setWindowTitle("Forget Attacks")  # Optional: Set a window title
+    window.setWindowTitle(_t("details.forget_attacks"))  # Optional: Set a window title
     # Outer layout contains everything
     outer_layout = QVBoxLayout(window)
 
@@ -558,7 +578,7 @@ def forget_attack_details_window(id: int, attack_set: list[str], logger: "InfoLo
     layout = QHBoxLayout(content_widget)  # The main layout is now set on this widget
 
     # HTML content
-    html_content = remember_attack_details_window_template
+    html_content = _translate_attack_headers(remember_attack_details_window_template)
     # Loop through the list of attacks and add them to the HTML content
     for attack in attack_set:
         move = find_details_move(attack)
@@ -584,7 +604,7 @@ def forget_attack_details_window(id: int, attack_set: list[str], logger: "InfoLo
     attack_layout = QVBoxLayout()
     for attack in attack_set:
         move = find_details_move(attack)
-        forget_attack_button = QPushButton(f"Forget {attack}") #add Details to Moves
+        forget_attack_button = QPushButton(_t("details.forget_attack", attack=attack)) #add Details to Moves
         forget_attack_button.clicked.connect(lambda checked, a=attack: forget_attack(id, attack_set, a, logger))
         attack_layout.addWidget(forget_attack_button)
     attack_layout_widget = QWidget()
@@ -631,12 +651,12 @@ def rename_pkmn(nickname, pkmn_name, individual_id, logger, refresh_callback):
                 with open(str(mypokemon_path), "w") as output_file:
                     json.dump(mypokemondata, output_file, indent=2)
                 # Logging and UI update
-                logger.log_and_showinfo("info", f"Your {pkmn_name.capitalize()} has been renamed to {nickname}!")
+                logger.log_and_showinfo("info", _t("details.renamed", pokemon_name=pkmn_name.capitalize(), nickname=nickname))
                 refresh_callback()
             else:
-                showWarning("Pokémon not found.")
+                showWarning(_t("details.pokemon_not_found"))
     except Exception as e:
-        showWarning(f"An error occurred: {e}")
+        showWarning(_t("details.error_occurred", error=e))
 
 def forget_attack(id: int, attacks: list[str], attack_to_forget: str, logger: "InfoLogger.ShowInfoLogger") -> None:
     """
@@ -652,7 +672,7 @@ def forget_attack(id: int, attacks: list[str], attack_to_forget: str, logger: "I
         None
     """
     if not mainpokemon_path.is_file():
-        logger.log_and_showinfo("warning","Missing Mainpokemon Data !")
+        logger.log_and_showinfo("warning", _t("missing_mainpokemon_data"))
         return
     with open(mainpokemon_path, "r", encoding="utf-8") as json_file:
         main_pokemon_data = json.load(json_file)
@@ -665,16 +685,16 @@ def forget_attack(id: int, attacks: list[str], attack_to_forget: str, logger: "I
                     if len(attacks) > 1:
                         attacks.remove(attack_to_forget)
                         msg = ""
-                        msg += f"Your {mainpkmndata['name'].capitalize()} forgot {attack_to_forget}."
-                        logger.log_and_showinfo("info",f"{msg}")
+                        msg += _t("details.forgot_attack", pokemon_name=mainpkmndata['name'].capitalize(), attack=attack_to_forget)
+                        logger.log_and_showinfo("info", f"{msg}")
                     else:  # If we reach here, it means the Pokemon only has 1 move left. We can't allow this move to be forgotten
                         msg = ""
-                        msg += f"Your {mainpkmndata['name'].capitalize()} only knows this move, you can't forget it ! "
-                        logger.log_and_showinfo("info",f"{msg}")
+                        msg += _t("details.cannot_forget_only_move", pokemon_name=mainpkmndata['name'].capitalize())
+                        logger.log_and_showinfo("info", f"{msg}")
                 else:
                     msg = ""
-                    msg += f"Your {mainpkmndata['name'].capitalize()} does not know {attack_to_forget}."
-                    logger.log_and_showinfo("info",f"{msg}")
+                    msg += _t("details.does_not_know_attack", pokemon_name=mainpkmndata['name'].capitalize(), attack=attack_to_forget)
+                    logger.log_and_showinfo("info", f"{msg}")
             mainpkmndata["attacks"] = attacks
             mypkmndata = mainpkmndata
             mainpkmndata = [mainpkmndata]
@@ -694,20 +714,20 @@ def forget_attack(id: int, attacks: list[str], attack_to_forget: str, logger: "I
             with open(str(mypokemon_path), "w") as output_file:
                 json.dump(mypokemondata, output_file, indent=2)
         else:
-            logger.log_and_showinfo("info","Please Select this Pokemon first as Main Pokemon ! \n Only Mainpokemons can forget attacks!")
+            logger.log_and_showinfo("info", _t("details.select_as_main_forget"))
 
 def PokemonFree(individual_id, name, logger, refresh_callback):
     # Confirmation dialog
     reply = QMessageBox.question(
-        None, 
-        "Confirm Release", 
-        f"Are you sure you want to release {name}?", 
-        QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, 
+        None,
+        _t("details.confirm_release"),
+        _t("details.release_confirm", name=name),
+        QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
         QMessageBox.StandardButton.No
     )
 
     if reply == QMessageBox.StandardButton.No:
-        logger.log_and_showinfo("info","Release cancelled.")
+        logger.log_and_showinfo("info", _t("details.release_cancelled"))
         return
 
     # Check if the Pokémon is in the main Pokémon file
@@ -716,7 +736,7 @@ def PokemonFree(individual_id, name, logger, refresh_callback):
 
     for pokemon in pokemon_data:
         if pokemon["individual_id"] == individual_id:
-            logger.log_and_showinfo("info","You can't free your Main Pokémon!")
+            logger.log_and_showinfo("info", _t("details.cannot_free_main"))
             return  # Exit the function if it's a Main Pokémon
 
     # Load Pokémon list from 'mypokemon_path' file
@@ -724,7 +744,7 @@ def PokemonFree(individual_id, name, logger, refresh_callback):
         with open(mypokemon_path, "r", encoding="utf-8") as file:
             pokemon_list = json.load(file)
     except (FileNotFoundError, json.JSONDecodeError):
-        logger.log_and_showinfo("info","Error: Could not load Pokémon data.")
+        logger.log_and_showinfo("info", _t("details.could_not_load_data"))
         return
 
     # Find the position of the Pokémon with the given individual_id
@@ -739,8 +759,8 @@ def PokemonFree(individual_id, name, logger, refresh_callback):
         pokemon_list.pop(position)
         with open(mypokemon_path, 'w') as file:
             json.dump(pokemon_list, file, indent=2)
-        logger.log_and_showinfo("info",f"{name.capitalize()} has been let free.")
+        logger.log_and_showinfo("info", _t("details.has_been_freed", name=name.capitalize()))
     else:
-        logger.log_and_showinfo("info","No Pokémon found with the specified ID.")
-    
+        logger.log_and_showinfo("info", _t("details.no_pokemon_with_id"))
+
     refresh_callback()

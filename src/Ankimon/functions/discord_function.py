@@ -18,35 +18,38 @@ class DiscordPresence:
             self.start_time = time.time()
             self.thread = None
             self.quotes = [
-                "Study hard, your Ankimon is watching!",
-                "Ankimon, I choose you—let’s master this deck!",
-                "Your knowledge is super effective!",
-                "Critical hit! You mastered that concept.",
-                "Never give up! Every review gets you closer to evolution.",
-                "Your brain gained 50 XP! Keep going!",
-                "It’s dangerous to go alone—take your Ankimon deck!",
-                "A wild Flashcard appeared! What will you do?",
-                "Evolve your knowledge—level up with every session!",
-                "Gotta review ‘em all, Ankimon style!"
+                mw.translator.translate("discord.q1"),
+                mw.translator.translate("discord.q2"),
+                mw.translator.translate("discord.q3"),
+                mw.translator.translate("discord.q4"),
+                mw.translator.translate("discord.q5"),
+                mw.translator.translate("discord.q6"),
+                mw.translator.translate("discord.q7"),
+                mw.translator.translate("discord.q8"),
+                mw.translator.translate("discord.q9"),
+                mw.translator.translate("discord.q10"),
             ]
+            _main = self.ankimon_tracker.main_pokemon
+            _enemy = self.ankimon_tracker.enemy_pokemon
+            _tr = self.ankimon_tracker
             self.special_quotes = [
-                f"In battle with {self.ankimon_tracker.main_pokemon.name.capitalize()} Lvl {self.ankimon_tracker.main_pokemon.level}",
-                f"Currently battling {self.ankimon_tracker.enemy_pokemon.name.capitalize()} Lvl {self.ankimon_tracker.enemy_pokemon.level}",
-                f"{self.ankimon_tracker.main_pokemon.name.capitalize()} is fired up and ready to fight!",
-                f"The opponent {self.ankimon_tracker.enemy_pokemon.name.capitalize()} seems tough—stay sharp!",
-                f"{self.ankimon_tracker.main_pokemon.name.capitalize()} is waiting for your next move!",
-                f"Level up and take down {self.ankimon_tracker.enemy_pokemon.name.capitalize()}!",
-                f"Victory is within reach for {self.ankimon_tracker.main_pokemon.nickname or self.ankimon_tracker.main_pokemon.name.capitalize()}!",
-                f"{self.ankimon_tracker.main_pokemon.name.capitalize()} is determined to show its strength!",
-                f"Keep your guard up! {self.ankimon_tracker.enemy_pokemon.name.capitalize()} is no pushover.",
-                f"The battle is intense, but {self.ankimon_tracker.main_pokemon.name.capitalize()} won't back down!",
-                f"Strategy is key! Plan your moves wisely against {self.ankimon_tracker.enemy_pokemon.name.capitalize()}!",
-                f"The stakes are high! {self.ankimon_tracker.main_pokemon.name.capitalize()} needs your help to win this fight!",
-                f"Total reviews completed: {self.ankimon_tracker.total_reviews}",
-                f"{self.ankimon_tracker.good_count} good reviews so far—keep it up!",
-                f"You've marked {self.ankimon_tracker.again_count} cards as 'Again'—let's focus and improve!",
-                f"Great job! {self.ankimon_tracker.easy_count} cards rated 'Easy'!",
-                f"{self.ankimon_tracker.hard_count} cards rated 'Hard'—you're tackling the tough ones!",
+                mw.translator.translate("discord.s_in_battle", name=_main.name.capitalize(), level=_main.level),
+                mw.translator.translate("discord.s_battling", name=_enemy.name.capitalize(), level=_enemy.level),
+                mw.translator.translate("discord.s_fired_up", name=_main.name.capitalize()),
+                mw.translator.translate("discord.s_opponent_tough", name=_enemy.name.capitalize()),
+                mw.translator.translate("discord.s_waiting", name=_main.name.capitalize()),
+                mw.translator.translate("discord.s_take_down", name=_enemy.name.capitalize()),
+                mw.translator.translate("discord.s_victory", name=(_main.nickname or _main.name.capitalize())),
+                mw.translator.translate("discord.s_determined", name=_main.name.capitalize()),
+                mw.translator.translate("discord.s_guard_up", name=_enemy.name.capitalize()),
+                mw.translator.translate("discord.s_intense", name=_main.name.capitalize()),
+                mw.translator.translate("discord.s_strategy", name=_enemy.name.capitalize()),
+                mw.translator.translate("discord.s_stakes", name=_main.name.capitalize()),
+                mw.translator.translate("discord.s_total_reviews", count=_tr.total_reviews),
+                mw.translator.translate("discord.s_good", count=_tr.good_count),
+                mw.translator.translate("discord.s_again", count=_tr.again_count),
+                mw.translator.translate("discord.s_easy", count=_tr.easy_count),
+                mw.translator.translate("discord.s_hard", count=_tr.hard_count),
             ]
             self.state = random.choice(self.quotes)
         except Exception as e:
@@ -100,7 +103,7 @@ class DiscordPresence:
             self.loop = False
             if not self.loop:
                 self.RPC.update(
-                    state="Break time! You’ve earned it.",
+                    state=mw.translator.translate("discord.break"),
                     large_image=self.large_image_url
                 )
         except Exception as e:

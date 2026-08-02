@@ -50,3 +50,20 @@ Support my Caffeine Addiction (something that helps building this Addon):
 Start your Pokémon journey with Ankimon and make learning an adventure!
 ![image](https://github.com/user-attachments/assets/1e5b9f0e-18c4-4115-a73e-08fc2e97f4d8)
 
+## Tiếng Việt / Vietnamese
+
+Ankimon hiện hỗ trợ giao diện tiếng Việt.
+
+### Cách bật tiếng Việt
+1. Mở **Ankimon → Cài đặt Ankimon** (Ankimon Settings).
+2. Ở mục **Ngôn ngữ giao diện** (UI Language), chọn **Tiếng Việt**.
+3. **Khởi động lại Anki** để áp dụng.
+
+Sau khi khởi động lại, toàn bộ menu, nút bấm, thông báo trận đấu, Pokédex, cửa sổ cài đặt và thẻ huấn luyện viên sẽ hiển thị bằng tiếng Việt.
+
+### Lưu ý quan trọng
+- **Tên và mô tả loài Pokémon** vẫn theo cài đặt **Ngôn ngữ** (Language) vì dữ liệu lấy từ **PokéAPI** — hiện chưa hỗ trợ tiếng Việt. Khuyến nghị giữ ở **English (9)** để tên Pokémon hiển thị đầy đủ.
+- Chế độ xem này chỉ ảnh hưởng đến giao diện tiện ích, không thay đổi ngôn ngữ dữ liệu Pokémon.
+
+---
+
